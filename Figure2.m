@@ -3,7 +3,7 @@ clc
 close all
 addpath('helperFuns/');
 
-figure_number = 1; %Use 1-3
+figure_number = 3; %Use 1-3
 
 % Monte carlo parameters
 no_of_grid_points = 1000;
@@ -153,11 +153,11 @@ plot(Gaussian_level_set, 'alpha',0.8, 'color', 'k');
 %scatter(Mink_boundary_point_of_interest(1,:),Mink_boundary_point_of_interest(2,:), 60, 'rd', 'filled');
 colormap('hot')
 contour(xvec(1:10:end),yvec(1:10:end),frequency(1:10:end,1:10:end),[alpha_value alpha_value],'LineWidth',2);
-leg = legend('$\mathrm{OvPrOccupySet}_P^+(\alpha)$',...
-             '$\mathrm{OvPrOccupySet}_P(\alpha)$',...
-             'Projection points on $\mathrm{PrOccupySet}_P(\alpha)$',...
-             '$\mathrm{UnPrOccupySet}_P(\alpha)$',...
-             '$\left\{ \overline{z}\in \mathcal{X}: \psi_{x}( \overline{z}) \geq \frac{\alpha}{ \mathrm{m}( \mathcal{O}(\overline{0}))}\right\}$',...
+leg = legend('$\mathrm{OvOccupySet}_{x}^+(\alpha)$',...
+             '$\mathrm{OvOccupySet}_{x}(\alpha)$',...
+             'Projection points on $\mathrm{OccupySet}_{x}(\alpha)$',...
+             '$\mathrm{UnOccupySet}_{x}(\alpha)$',...
+             '$\left\{ \overline{z}\in \mathcal{X}: \psi_{x}(\overline{x}) \geq \frac{\alpha}{ \mathrm{m}( \mathcal{G}_x(\overline{0}))}\right\}$',...
              'Monte-Carlo simulation'); %'Boundary points for MinkSum',...
 %for point_index=1:no_of_points_on_the_circle
 %    line_points = [faraway_points_backward(:,point_index),boundary_point_of_interest(:,point_index), faraway_points_forward(:,point_index)];
@@ -169,9 +169,8 @@ box on
 axis square
 axis([-40 45 -35 40])
 set(gca,'FontSize',20);
-% TODO
-%xlabel('x')
-%ylabel('x')
+% xlabel('x')
+% ylabel('y')
 
 disp(elapsed_time_polytope)
 disp(elapsed_time_minksum)

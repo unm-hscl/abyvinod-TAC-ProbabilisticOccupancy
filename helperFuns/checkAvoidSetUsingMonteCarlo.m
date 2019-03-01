@@ -30,15 +30,21 @@ MC_counter = zeros(no_of_grid_points_y,no_of_grid_points_x);
 %% Propagate the dynamics
 mode_sequence_indx = 0;
 fprintf('Simulating the trajectories\nStops at %d (no_of_particles allocated)\n', no_of_sequences);
-for indx_sequence=1:no_of_sequences
-    mode_sequence_omega = all_comb_mode_row_wise(indx_sequence,:);
-    [ctrb_matrix, state_transition_matrix] =...
-    get_ctrb_and_state_transition_matrices_unicycle(mode_sequence_omega,...
-                                                    theta_init,...
-                                                    sampling_time);
+for indx_indx_sequence = 1:no_nnz_prob_sequences
+    % Translate the indx to indx_sequence
+    indx_sequence = nnz_prob_sequences(indx_indx_sequence);
+    % Create obstacle dynamics associated with this theta sequence
+    theta_seq = all_comb_heading_row_wise(indx_sequence,:);
+    sys = LtvSystem('StateMatrix', @(t) eye(2), ...
+                    'DisturbanceMatrix', @(t) sampling_time * ...
+                        [cos(theta_seq(t+1)); sin(theta_seq(t+1))], ...
+                    'Disturbance', v_random_vector);
     no_of_particles = no_of_particles_as_per_probability_seq(indx_sequence);
+    [Z, ~, G] = sys.getConcatMats(last_time_step_including_init);
+    state_transition_matrix = Z(end-1:end,:);
+    ctrb_matrix = G(end-1:end,:);
     fprintf(' %2d ( %6d)\n', indx_sequence, no_of_particles);
-    velocity_random_variable_realizations = sqrt(variance_velocity)*randn(time_steps_taken,no_of_particles) + mu_velocity;
+    velocity_random_variable_realizations = sqrt(var_velocity)*randn(last_time_step_including_init, no_of_particles) + mu_velocity;
     particle_terminal_states =...
             state_transition_matrix * repmat(obstacle_init_location,1,no_of_particles)...
             + ctrb_matrix * velocity_random_variable_realizations;
