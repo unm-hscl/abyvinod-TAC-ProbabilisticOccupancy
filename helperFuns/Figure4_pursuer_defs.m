@@ -2,6 +2,7 @@
 % time_horizon
 % relv_states
 
+
 pursuer1_initial_state = [7;0;0.5;0];
 pursuer2_initial_state = [10;0;10;0];
 pursuer3_initial_state = [34;0;0.5;0];
@@ -18,6 +19,11 @@ pursuer_sys = LtiSystem('StateMatrix', pursuer_sys_state_mat, ...
 
 % Obtain the pursuer reach set with zero state and unit input                        
 Figure4_pursuer_unit_input_position_set
+% elapsed_time_pursuer_reach
+if ~exist('elapsed_time_pursuer_reach','var')
+    throw('Expected elapsed_time_pursuer_reach to be defined from '+ ...
+        'Figure4_pursuer_unit_input_position_set');
+end
 
 % Compute the zero input (natural dynamics) of the pursuers
 pursuer_position_set_1_zero_input = zeros(2,time_horizon);
@@ -38,41 +44,46 @@ pursuer_team_position_set_zero_input = [
     pursuer2_initial_state(relv_states,1), pursuer_position_set_2_zero_input;
     pursuer3_initial_state(relv_states,1), pursuer_position_set_3_zero_input];
 pursuer_interceptable_position_set = [ones(2,0)*Polyhedron()];
-for pursuer_indx = 1:3
-    pursuer_position_set_zero_input = ...
-        pursuer_team_position_set_zero_input(...
-            2*(pursuer_indx-1)+1 : 2*(pursuer_indx-1)+2, :);
-    for t_indx = 2:1:time_horizon+1
-        % Time goes from 0 to time_horizon for both
-        %   pursuer_position_set_zero_input and 
-        %   pursuer_position_sets_zero_state_unit_input
+for t_indx_plus1 = 1:1:time_horizon+1
+    % Time goes from 0 to time_horizon for both
+    %   pursuer_position_set_zero_input and 
+    %   pursuer_position_sets_zero_state_unit_input
+    timer = tic;
+    for pursuer_indx = 1:3
+        % A 2x(time_horizon + 1) matrix of pursuer positions (under natural
+        % dynamics)
+        pursuer_position_set_zero_input = ...
+            pursuer_team_position_set_zero_input(...
+                2*(pursuer_indx-1)+1 : 2*(pursuer_indx-1)+2, :);
         for poly_indx = 1:3
             % Get the forward reach set
-            if ~pursuer_position_sets_zero_state_unit_input(t_indx).isEmptySet()
+            if ~pursuer_position_sets_zero_state_unit_input(t_indx_plus1).isEmptySet()
                 pursuer_actual_position_set = ...
-                    pursuer_position_set_zero_input(:, t_indx) + ...
+                    pursuer_position_set_zero_input(:, t_indx_plus1) + ...
                         pursuer_u_limit * ...
-                        pursuer_position_sets_zero_state_unit_input(t_indx);
+                        pursuer_position_sets_zero_state_unit_input(t_indx_plus1);
             else
                 pursuer_actual_position_set = Polyhedron('V', ...
-                    pursuer_position_set_zero_input(:, t_indx)');
+                    pursuer_position_set_zero_input(:, t_indx_plus1)');
             end
             % Forward reach set at time t intersected with convex intercept zone
             pursuer_interceptable_position_set( ...
-                            pursuer_indx, t_indx, poly_indx) = ...
+                            pursuer_indx, t_indx_plus1, poly_indx) = ...
                 pursuer_actual_position_set.intersect( ...
                     pursuer_cvx(pursuer_indx, poly_indx));
             
             if ~pursuer_interceptable_position_set( ...
-                            pursuer_indx, t_indx, poly_indx).isEmptySet() && ...
-                    abs(mod(t_indx, plot_t_skip))<1e-8
+                            pursuer_indx, t_indx_plus1, poly_indx).isEmptySet() && ...
+                    abs(mod(t_indx_plus1, plot_t_skip))<1e-8
                 fprintf('Plotting time for pursuer %d: %d\n', pursuer_indx, ...
-                    t_indx-1);
+                    t_indx_plus1-1);
                 plot(pursuer_interceptable_position_set( ...
-                            pursuer_indx, t_indx, poly_indx), ...
+                            pursuer_indx, t_indx_plus1, poly_indx), ...
                     'alpha', 0.2, 'color', 'm');
                 drawnow
             end
         end
     end
+    elapsed_time_pursuer_reach(t_indx_plus1) = elapsed_time_pursuer_reach(t_indx_plus1) +... 
+        toc(timer);
 end

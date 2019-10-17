@@ -3,6 +3,7 @@
 % Time goes from 0 to time_horizon
 
 pursuer_mat_filename = 'Figure4_pursuer_position_set.mat';
+elapsed_time_pursuer_reach = zeros(time_horizon + 1, 1);
 
 if exist(pursuer_mat_filename, 'file')
     fprintf('### LOADED position sets from %s\n', pursuer_mat_filename);
@@ -19,15 +20,21 @@ else
     for t_indx = 1:time_horizon
         fprintf('Computing pursuer forward reach (position) set for t=%d\n', ...
             t_indx);
+        timer = tic;
         temp_poly = pursuer_H(4*(t_indx-1) + relv_states,:) * ...
             pursuer_concat_unit_input_space;
         temp_poly.minHRep();
+        % t_indx + 1 to accommodate space for t=0
+        elapsed_time_pursuer_reach(t_indx + 1) = toc(timer);
         pursuer_position_sets_zero_state_unit_input(t_indx) = temp_poly;
     end
     % Add the t=0 case
+    timer = tic;
     pursuer_position_sets_zero_state_unit_input = ...
         [ones(2,0)*Polyhedron(), pursuer_position_sets_zero_state_unit_input];
+    elapsed_time_pursuer_reach(1) = toc(timer);    
     save(strcat('./helperFuns/',pursuer_mat_filename), 'pursuer_Z', ...
-        'pursuer_position_sets_zero_state_unit_input');
+        'pursuer_position_sets_zero_state_unit_input', ...
+        'elapsed_time_pursuer_reach');
     fprintf('### SAVED position sets in %s\n', pursuer_mat_filename);
 end

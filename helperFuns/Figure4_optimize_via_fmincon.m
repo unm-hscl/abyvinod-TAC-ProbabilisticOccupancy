@@ -39,10 +39,14 @@ for feas_list_indx = 1:count_feas
     % -2 because t_indx_plus1 -1 is the correct time and an additional -1
     % ensures that relv_states (added on top of it) is of the correct time
     % snapshot
-    relv_indx = 4*(t_indx_plus1-2) + relv_states;
-    target_mean_position = target_Z(relv_indx,:)*target_init_state+ ...
-        target_H(relv_indx,:)*target_affine_vec + ...
-        target_G(relv_indx,:)*repmat([dist_mean; dist_mean], time_horizon, 1);
+    if t_indx_plus1 > 1
+        relv_indx = 4*(t_indx_plus1-2) + relv_states;
+        target_mean_position = target_Z(relv_indx,:)*target_init_state+ ...
+            target_H(relv_indx,:)*target_affine_vec + ...
+            target_G(relv_indx,:)*repmat([dist_mean; dist_mean], time_horizon, 1);
+    else
+        target_mean_position = target_init_state;
+    end
     
     
     % Compute initial state via projection (CVX)

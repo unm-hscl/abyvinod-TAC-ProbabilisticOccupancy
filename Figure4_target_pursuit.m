@@ -2,6 +2,9 @@ clearvars;
 clc;
 
 addpath('./helperFuns/');
+timer_total = tic;
+%% Global parameters
+fontSize = 20;
 
 %% Construct the approximate map
 Figure4_polytope_defs
@@ -53,11 +56,13 @@ feasible_intercept_locations = [ones(2,0) * Polyhedron()];
 count_infeas = 0;
 count_feas = 0;
 feas_list = [];       % pursuer_indx, t_indx_plus1, pursuer_cvx_indx
-for t_indx_plus1 = 2:time_horizon+1
+elapsed_time_feas_poly = zeros(time_horizon + 1, 1);
+for t_indx_plus1 = 1:time_horizon+1
     % Time goes from 0 to time_horizon for both
     %   pursuer_position_set_zero_input and 
     %   pursuer_position_sets_zero_state_unit_input
     target_support_poly = target_support_position(t_indx_plus1);
+    timer=tic;
     for pursuer_indx = 1:3
         for pursuer_cvx_indx = 1:3
             temp_poly = pursuer_interceptable_position_set(pursuer_indx, ...
@@ -72,6 +77,7 @@ for t_indx_plus1 = 2:time_horizon+1
             end                
         end
     end
+    elapsed_time_feas_poly(t_indx_plus1) = toc(timer);
 end
 fprintf('Need to solve the catch problem with %d polytopes (%1.3f %%)\n', ...
     count_feas, count_feas/(3*3*time_horizon)*100);
@@ -84,11 +90,15 @@ catch_box = catch_box_half_length * Polyhedron('lb',-[1;1],'ub',[1;1]);
 %% Use fmincon for constrained optimization for permitted intercept zones
 Figure4_optimize_via_fmincon
 
+%% Plot the mean times
+Figure4_plot_results
+
 %% Final touches to the plot
 figure(1);
 axis equal;
 xlim([-2,37]);
 ylim([-2,15]);
+elapsed_time_total = toc(timer_total);
 
 function [neg_log_prob, grad_after_log] = obj_with_grad(x, catch_box, t_indx,...
             target_sys, relv_states, target_init_state, ...

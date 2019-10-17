@@ -73,4 +73,5 @@ plot(pursuer_cvx(3,2), 'color', 'g', 'alpha',0.4);
 plot(pursuer_cvx(3,3), 'color', 'g', 'alpha',0.4);
 axis equal;
 box on;
-set(gca,'FontSize',20);
+set(gca,'FontSize',fontSize);
+grid on;
