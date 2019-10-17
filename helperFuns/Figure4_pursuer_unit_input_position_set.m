@@ -8,7 +8,7 @@ if exist(pursuer_mat_filename, 'file')
     fprintf('### LOADED position sets from %s\n', pursuer_mat_filename);
     load(pursuer_mat_filename);
 else
-    pursuer_position_sets_zero_state_unit_input = Polyhedron();
+    pursuer_position_sets_zero_state_unit_input = ones(2,0)*Polyhedron();
     % Equal limits on x,y acceleration inputs
     pursuer_concat_lower_limit = -repmat([1;1], time_horizon, 1);
     pursuer_concat_upper_limit = -pursuer_concat_lower_limit;
@@ -26,7 +26,7 @@ else
     end
     % Add the t=0 case
     pursuer_position_sets_zero_state_unit_input = ...
-        [Polyhedron(2), pursuer_position_sets_zero_state_unit_input];
+        [ones(2,0)*Polyhedron(), pursuer_position_sets_zero_state_unit_input];
     save(strcat('./helperFuns/',pursuer_mat_filename), 'pursuer_Z', ...
         'pursuer_position_sets_zero_state_unit_input');
     fprintf('### SAVED position sets in %s\n', pursuer_mat_filename);

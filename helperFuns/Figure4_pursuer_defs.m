@@ -2,9 +2,9 @@
 % time_horizon
 % relv_states
 
-pursuer1_initial_state = [1;0;1;0];
+pursuer1_initial_state = [7;0;0.5;0];
 pursuer2_initial_state = [10;0;10;0];
-pursuer3_initial_state = [30;0;1;0];
+pursuer3_initial_state = [34;0;0.5;0];
 pursuer_u_limit = 4;
 
 % Pursuer system definitions
@@ -37,16 +37,42 @@ pursuer_team_position_set_zero_input = [
     pursuer1_initial_state(relv_states,1), pursuer_position_set_1_zero_input;
     pursuer2_initial_state(relv_states,1), pursuer_position_set_2_zero_input;
     pursuer3_initial_state(relv_states,1), pursuer_position_set_3_zero_input];
+pursuer_interceptable_position_set = [ones(2,0)*Polyhedron()];
 for pursuer_indx = 1:3
     pursuer_position_set_zero_input = ...
         pursuer_team_position_set_zero_input(...
             2*(pursuer_indx-1)+1 : 2*(pursuer_indx-1)+2, :);
-    for t_indx = 2:plot_t_skip:time_horizon+1
-        fprintf('Plotting time for pursuer %d: %d\n', pursuer_indx, t_indx-1);
-        plot(pursuer_position_set_zero_input(:, t_indx) + ...
-            pursuer_u_limit * ...
-                pursuer_position_sets_zero_state_unit_input(t_indx), ...
-            'alpha', 0);
-        drawnow
+    for t_indx = 2:1:time_horizon+1
+        % Time goes from 0 to time_horizon for both
+        %   pursuer_position_set_zero_input and 
+        %   pursuer_position_sets_zero_state_unit_input
+        for poly_indx = 1:3
+            % Get the forward reach set
+            if ~pursuer_position_sets_zero_state_unit_input(t_indx).isEmptySet()
+                pursuer_actual_position_set = ...
+                    pursuer_position_set_zero_input(:, t_indx) + ...
+                        pursuer_u_limit * ...
+                        pursuer_position_sets_zero_state_unit_input(t_indx);
+            else
+                pursuer_actual_position_set = Polyhedron('V', ...
+                    pursuer_position_set_zero_input(:, t_indx)');
+            end
+            % Forward reach set at time t intersected with convex intercept zone
+            pursuer_interceptable_position_set( ...
+                            pursuer_indx, t_indx, poly_indx) = ...
+                pursuer_actual_position_set.intersect( ...
+                    pursuer_cvx(pursuer_indx, poly_indx));
+            
+            if ~pursuer_interceptable_position_set( ...
+                            pursuer_indx, t_indx, poly_indx).isEmptySet() && ...
+                    abs(mod(t_indx, plot_t_skip))<1e-8
+                fprintf('Plotting time for pursuer %d: %d\n', pursuer_indx, ...
+                    t_indx-1);
+                plot(pursuer_interceptable_position_set( ...
+                            pursuer_indx, t_indx, poly_indx), ...
+                    'alpha', 0.2, 'color', 'm');
+                drawnow
+            end
+        end
     end
 end
