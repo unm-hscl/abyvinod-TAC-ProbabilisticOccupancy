@@ -33,12 +33,12 @@ Figure4_pursuer_defs
 target_concat_state_realization = generateMonteCarloSims(n_monte_carlo, ...
     target_sys, target_init_state, time_horizon, target_affine_vec);
 Figure4_target_support
-for t_indx = 2:plot_t_skip:time_horizon+1
+for t_indx_plus1 = 2:plot_t_skip:time_horizon+1
     % Time goes from 0 to time_horizon for both
     %   target_support_position and target_concat_state_realization
-    fprintf('Plotting time: %d\n', t_indx-1);
-    plot(target_support_position(t_indx), 'alpha', 0.2, 'color', 'y');
-    relv_indx = 4*(t_indx-1) + relv_states;
+    fprintf('Plotting time: %d\n', t_indx_plus1-1);
+    plot(target_support_position(t_indx_plus1), 'alpha', 0.2, 'color', 'y');
+    relv_indx = 4*(t_indx_plus1-1) + relv_states;
     scatter(target_concat_state_realization(relv_indx(1),1:skip_mc:end), ...
             target_concat_state_realization(relv_indx(2),1:skip_mc:end), ...
             'ro', 'filled');
@@ -52,23 +52,23 @@ plot(mean_trajectory(relv_states(1):4:end), mean_trajectory(relv_states(2):4:end
 feasible_intercept_locations = [ones(2,0) * Polyhedron()];
 count_infeas = 0;
 count_feas = 0;
-feas_list = [];       % pursuer_indx, t_indx, pursuer_cvx_indx
-for t_indx = 2:time_horizon+1
+feas_list = [];       % pursuer_indx, t_indx_plus1, pursuer_cvx_indx
+for t_indx_plus1 = 2:time_horizon+1
     % Time goes from 0 to time_horizon for both
     %   pursuer_position_set_zero_input and 
     %   pursuer_position_sets_zero_state_unit_input
-    target_support_poly = target_support_position(t_indx);
+    target_support_poly = target_support_position(t_indx_plus1);
     for pursuer_indx = 1:3
         for pursuer_cvx_indx = 1:3
             temp_poly = pursuer_interceptable_position_set(pursuer_indx, ...
-                t_indx, pursuer_cvx_indx);
+                t_indx_plus1, pursuer_cvx_indx);
             temp_poly = temp_poly.intersect(target_support_poly);
             if temp_poly.isEmptySet()
                 count_infeas = count_infeas + 1;
             else
                 count_feas = count_feas + 1;
                 plot(temp_poly, 'color','k','alpha',0.8);
-                feas_list = [feas_list;pursuer_indx, t_indx, pursuer_cvx_indx];
+                feas_list = [feas_list;pursuer_indx, t_indx_plus1, pursuer_cvx_indx];
             end                
         end
     end
@@ -89,20 +89,24 @@ max_feas_prob_catch_value = zeros(1, count_feas);
 for feas_list_indx = 1:count_feas    
     % Get the parameters for feasible polytope
     pursuer_indx = feas_list(feas_list_indx, 1);
-    t_indx = feas_list(feas_list_indx, 2);   % Time goes from 0 to time_horizon
+    t_indx_plus1 = feas_list(feas_list_indx, 2);   % Time goes from 0 to time_horizon
     pursuer_cvx_indx = feas_list(feas_list_indx, 3);
     fprintf('%2d/%2d. Computing for time %d\n', feas_list_indx, count_feas, ...
-        t_indx - 1);
+        t_indx_plus1 - 1);
     
     % Get the feasible polytope
+    % We use t_indx_plus1 directly since t=0 sets are part of these lists
     feas_poly = pursuer_interceptable_position_set(pursuer_indx, ...
-            t_indx, pursuer_cvx_indx).intersect( ...
-                target_support_position(t_indx));
+            t_indx_plus1, pursuer_cvx_indx).intersect( ...
+                target_support_position(t_indx_plus1));
     feas_poly_outerapprox = feas_poly.outerApprox;
     
     % Compute target mean position (1 maps to 0) 
     % Z, H, G does not have initial state
-    relv_indx = 4*(t_indx-2) + relv_states;
+    % -2 because t_indx_plus1 -1 is the correct time and an additional -1
+    % ensures that relv_states (added on top of it) is of the correct time
+    % snapshot
+    relv_indx = 4*(t_indx_plus1-2) + relv_states;
     target_mean_position = target_Z(relv_indx,:)*target_init_state+ ...
         target_H(relv_indx,:)*target_affine_vec + ...
         target_G(relv_indx,:)*repmat([dist_mean; dist_mean], time_horizon, 1);
@@ -117,12 +121,11 @@ for feas_list_indx = 1:count_feas
             feas_poly.A * initial_guess <= feas_poly.b;
     cvx_end
     
-    % Plot the initial guess
-%     scatter(initial_guess(1), initial_guess(2), 50, 'wo','filled');drawnow;      
-
-    catch_prob = @(x) Figure4_occupy_fun_Levi(x + catch_box, t_indx, ...
+    % t_indx_plus1 -1 because t_indx_plus1 starts from 0 and here the
+    % correct t_indx is required
+    catch_prob = @(x) Figure4_occupy_fun_Levi(x + catch_box, t_indx_plus1-1, ...
         target_sys, relv_states, target_init_state, ...
-        target_affine_vec(1:2*t_indx), dist_delta, dist_peak);
+        target_affine_vec(1:2*(t_indx_plus1-1)), dist_delta, dist_peak);
 
     catch_prob_at_initial_guess = catch_prob(initial_guess);
     tic;

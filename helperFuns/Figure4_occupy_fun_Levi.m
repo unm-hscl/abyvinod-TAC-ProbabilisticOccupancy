@@ -1,7 +1,8 @@
 function prob = Figure4_occupy_fun_Levi(query_box, time_step, sys, ...
         relv_states, initial_state, affine_vec, dist_delta, dist_peak)
     % query_box         - Probability of lying within this box is computed
-    % time_step         - Time step into the future
+    % time_step         - Time step into the future (1 means t=1; 
+    %                     initial state is at t=0)
     % relv_states       - components of the state space interested
     % initial_state     - Initial state of the system
     % optimal_input_vec - Affine term that will be multiplied with H
@@ -10,6 +11,7 @@ function prob = Figure4_occupy_fun_Levi(query_box, time_step, sys, ...
     
     % Throw a warning if probability outside [-my_zero, 1+my_zero]
     my_zero = 1e-6;    
+    min_prob = 1e-3;
     bounds_on_integral = 400;
     [Z, H, G] = sys.getConcatMats(time_step); 
     
@@ -42,7 +44,7 @@ function prob = Figure4_occupy_fun_Levi(query_box, time_step, sys, ...
         keyboard
     else
         % Sanitize
-        prob = max(min(prob, 1), 0);
+        prob = max(min(prob, 1), min_prob);
     end
 end
 
