@@ -82,7 +82,9 @@ zero_catch_prob = 1e-4;
 catch_box = catch_box_half_length * Polyhedron('lb',-[1;1],'ub',[1;1]);
 
 %% Use fmincon for constrained optimization for permitted intercept zones
-fmincon_optimoptions = optimoptions('fmincon', 'display', 'iter');
+use_gradient = true;
+fmincon_optimoptions = optimoptions('fmincon', 'display', 'iter', ...
+    'SpecifyObjectiveGradient', use_gradient);
 max_feas_prob_catch_location = zeros(2, count_feas);
 max_feas_prob_catch_value = zeros(1, count_feas);
 
@@ -123,9 +125,10 @@ for feas_list_indx = 1:count_feas
     
     % t_indx_plus1 -1 because t_indx_plus1 starts from 0 and here the
     % correct t_indx is required
+    target_affine_vec_slice = target_affine_vec(1:2*(t_indx_plus1-1));
     catch_prob = @(x) Figure4_occupy_fun_Levi(x + catch_box, t_indx_plus1-1, ...
-        target_sys, relv_states, target_init_state, ...
-        target_affine_vec(1:2*(t_indx_plus1-1)), dist_delta, dist_peak);
+        target_sys, relv_states, target_init_state, target_affine_vec_slice, ...
+        dist_delta, dist_peak);
 
     catch_prob_at_initial_guess = catch_prob(initial_guess);
     tic;
@@ -136,10 +139,24 @@ for feas_list_indx = 1:count_feas
     else
         fprintf('Initial guess returned a probability of %1.4f\n', ...
             catch_prob_at_initial_guess);
-        % Compute the best capture location
-        neg_log_catch_prob = @(x) -log(catch_prob(x));
+        % Define the objective for fmincon
+        if ~use_gradient
+            % t_indx_plus1 -1 because t_indx_plus1 starts from 0 and here the
+            % correct t_indx is required
+            obj = @(x) -log(Figure4_occupy_fun_Levi(...
+                x + catch_box, t_indx_plus1 - 1, target_sys, relv_states, ...
+                target_init_state, target_affine_vec_slice, dist_delta, ...
+                dist_peak, false));
+        else
+            % t_indx_plus1 -1 because t_indx_plus1 starts from 0 and here the
+            % correct t_indx is required
+            obj = @(x) obj_with_grad(x, catch_box, t_indx_plus1 - 1, target_sys, ...
+                relv_states, target_init_state, target_affine_vec_slice, ...
+                dist_delta, dist_peak);
+        end
+        % Compute the best capture location            
         [max_feas_prob_catch_location(:, feas_list_indx), F] = fmincon(...
-            neg_log_catch_prob, initial_guess, feas_poly.A, feas_poly.b, [],...
+            obj, initial_guess, feas_poly.A, feas_poly.b, [],...
             [], [], [], [], fmincon_optimoptions);
         fprintf('Catch probability: %1.4f\n', exp(-F));
         max_feas_prob_catch_value(feas_list_indx) = exp(-F);         
@@ -152,3 +169,15 @@ figure(1);
 axis equal;
 xlim([-2,37]);
 ylim([-2,15]);
+
+function [neg_log_prob, grad_after_log] = obj_with_grad(x, catch_box, t_indx,...
+            target_sys, relv_states, target_init_state, ...
+            target_affine_vec_slice, dist_delta, dist_peak)
+    [prob, grad] = Figure4_occupy_fun_Levi(x + catch_box, t_indx, target_sys,...
+                    relv_states, target_init_state, target_affine_vec_slice, ...
+                    dist_delta, dist_peak, true);
+    neg_log_prob = -log(prob);
+    if prob >= 1e-6
+        grad_after_log = -grad/prob;
+    end
+end
