@@ -20,13 +20,13 @@ Figure4_target_defs
 %         target_init_state, optimal_input_vec(1:2*time_step), dist_delta, ...
 %         dist_peak);
 % % Monte-Carlo-simulation based validation    
-% relv_sims = concat_state_realization(4*time_step + [1;3],:);    
+% relv_sims = concat_state_realization(4*time_step + relv_states,:);    
 % prob_mcarlo = sum(query_box.contains(relv_sims))/n_monte_carlo;
 % fprintf('Probability : %1.4f | MonteCarlo probability : %1.4f\n', ...
 %     prob, prob_mcarlo);    
 
-% %% Construct the pursuer forward reach sets
-% Figure4_pursuer_defs
+%% Construct the pursuer forward reach sets
+Figure4_pursuer_defs
 
 %% Construct time-stamped reach sets for each of the pursuers
 

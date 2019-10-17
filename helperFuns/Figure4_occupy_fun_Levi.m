@@ -1,5 +1,5 @@
 function prob = Figure4_occupy_fun_Levi(query_box, time_step, sys, ...
-        relv_states, initial_state, optimal_input_vec, dist_delta, dist_peak)
+        relv_states, initial_state, affine_vec, dist_delta, dist_peak)
     % query_box         - Probability of lying within this box is computed
     % time_step         - Time step into the future
     % relv_states       - components of the state space interested
@@ -16,7 +16,7 @@ function prob = Figure4_occupy_fun_Levi(query_box, time_step, sys, ...
     % x_t = G W + (Z*x_0 + H * U) last 4 rows = d + T*W
     state_dim = sys.state_dim;
     d = Z(end-state_dim+relv_states,:) * initial_state + ...
-        H(end-state_dim+relv_states,:) * optimal_input_vec;
+        H(end-state_dim+relv_states,:) * affine_vec;
     T = G(end-state_dim+relv_states,:);
     
     
