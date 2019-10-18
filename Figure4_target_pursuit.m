@@ -5,6 +5,7 @@ addpath('./helperFuns/');
 timer_total = tic;
 %% Global parameters
 fontSize = 20;
+get_layout_plot = false;
 
 %% Construct the approximate map
 Figure4_polytope_defs
@@ -50,7 +51,12 @@ end
 % Plot mean trajectory
 mean_trajectory = mean(target_concat_state_realization,2);
 plot(mean_trajectory(relv_states(1):4:end), mean_trajectory(relv_states(2):4:end), 'r--', 'linewidth', 2);
-                            
+
+if get_layout_plot
+    disp('Layout plot ready');
+    disp('You may want to delete a couple of support polytopes');
+    keyboard
+end
 %% Find non-empty feasible intersect locations
 feasible_intercept_locations = [ones(2,0) * Polyhedron()];
 count_infeas = 0;

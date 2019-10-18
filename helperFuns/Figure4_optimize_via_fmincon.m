@@ -101,4 +101,6 @@ for feas_list_indx = 1:count_feas
         max_feas_prob_catch_value(feas_list_indx) = exp(-F);         
     end 
     elapsed_time_fmincon(feas_list_indx) = toc(timer);
+    fprintf('Elapsed time: %1.2f s (cvx+fmincon)\n', ...
+        elapsed_time_cvx(feas_list_indx) + elapsed_time_fmincon(feas_list_indx));
 end
