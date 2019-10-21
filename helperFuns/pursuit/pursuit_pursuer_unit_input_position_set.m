@@ -8,6 +8,9 @@ elapsed_time_pursuer_reach = zeros(time_horizon + 1, 1);
 if exist(pursuer_mat_filename, 'file')
     fprintf('### LOADED position sets from %s\n', pursuer_mat_filename);
     load(pursuer_mat_filename);
+    if length(pursuer_position_sets_zero_state_unit_input) ~= time_horizon + 1
+        input("Invalid pursuit_pursuer_position_set matfile. Stopping!");
+    end
 else
     pursuer_position_sets_zero_state_unit_input = ones(2,0)*Polyhedron();
     % Equal limits on x,y acceleration inputs
@@ -21,8 +24,8 @@ else
         fprintf('Computing pursuer forward reach (position) set for t=%d\n', ...
             t_indx);
         timer = tic;
-        temp_poly = pursuer_H(4*(t_indx-1) + relv_states,:) * ...
-            pursuer_concat_unit_input_space;
+        temp_poly = pursuer_H( pursuer_sys.state_dim * (t_indx-1) + ...
+                pursuer_relv_states,:) * pursuer_concat_unit_input_space;
         temp_poly.minHRep();
         % t_indx + 1 to accommodate space for t=0
         elapsed_time_pursuer_reach(t_indx + 1) = toc(timer);
@@ -33,7 +36,7 @@ else
     pursuer_position_sets_zero_state_unit_input = ...
         [ones(2,0)*Polyhedron(), pursuer_position_sets_zero_state_unit_input];
     elapsed_time_pursuer_reach(1) = toc(timer);    
-    save(strcat('./helperFuns/',pursuer_mat_filename), 'pursuer_Z', ...
+    save(strcat('./helperFuns/pursuit/',pursuer_mat_filename), 'pursuer_Z', ...
         'pursuer_position_sets_zero_state_unit_input', ...
         'elapsed_time_pursuer_reach');
     fprintf('### SAVED position sets in %s\n', pursuer_mat_filename);

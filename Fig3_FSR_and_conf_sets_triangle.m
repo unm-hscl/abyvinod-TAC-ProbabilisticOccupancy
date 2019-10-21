@@ -21,13 +21,13 @@ initial_heading = pi/10;                       % Initial heading
 init_location = zeros(2,1);                  
 turning_rate_seq = [0,0,10,10,10,0,0,-5,-5,-5];
 % Input space definition
-vmax = 1;
+v_delta = 1;  % Should be a positive number
 avg_vel = 10;
 
 %% Auxillary problem parameters --- derived from above
 time_horizon = length(turning_rate_seq);
-v_rv_pdf_obj = makedist('Triangular','a',avg_vel-vmax,'b', avg_vel, ...
-    'c',avg_vel + vmax);
+v_rv_pdf_obj = makedist('Triangular','a',avg_vel-v_delta,'b', avg_vel, ...
+    'c',avg_vel + v_delta);
 v_rv = RandomVector('UserDefined', @(N) v_rv_pdf_obj.random(1,N));
 
 %% Dynamics
@@ -73,7 +73,7 @@ for t=1:time_horizon
     % Unperturbed state
     x_unpert = state_mat * init_location + avg_vel.* sum(control_ctrb_mat,2);
     % Zero mean version
-    relv_dist_space = Polyhedron('lb',-vmax*ones(t,1),'ub',vmax*ones(t,1)); 
+    relv_dist_space = Polyhedron('lb',-v_delta*ones(t,1),'ub',v_delta*ones(t,1)); 
     % FSR set has t going from 0 to time_horizon (hence t+1)
     fsr_set{t+1} = x_unpert + ctrb_mat * relv_dist_space;
 

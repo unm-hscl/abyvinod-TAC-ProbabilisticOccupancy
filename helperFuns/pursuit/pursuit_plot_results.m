@@ -1,5 +1,5 @@
 elapsed_time_solver = elapsed_time_fmincon;
-pursuer_color_list=['g','b','m','k','c','r'];
+pursuer_color_list=['g','b','k','m','c','r'];
 
 % Decode the feas_list into indexed time stamps
 enum_feas_list = [feas_list, (1:count_feas)'];
@@ -82,26 +82,17 @@ stem(0:time_horizon, total_time, 'kp', 'filled',  ...
 % h.Annotation.LegendInformation.IconDisplayStyle = 'off';
 h = plot(0:time_horizon, 60 *ones(time_horizon+1,1), 'k--');
 h.Annotation.LegendInformation.IconDisplayStyle = 'off';
-dim = [0.35    0.61    0.09    0.065]; 
+dim = [0.35    0.61    0.09    0.115]; 
 t=annotation('textbox',dim,'String','1 min.','FitBoxToText','on', ...
     'FontSize',fontSize*1.5,'EdgeColor','w');
-h = plot(0:time_horizon, 300 *ones(time_horizon+1,1), 'k--');
-h.Annotation.LegendInformation.IconDisplayStyle = 'off';
-dim = [0.3360    0.6937    0.0999    0.0642]; 
-t=annotation('textbox',dim,'String','10 min.','FitBoxToText','on', ...
-    'FontSize',fontSize*1.5,'EdgeColor','w');
 ax = gca;
-% rounded_max_time = 300;
-% max_time = 300;
-% y_step_size = 30;
-% rounded_max_time = max_time + (y_step_size - mod(max_time, y_step_size));
 ax.YScale = 'log';
-ax.YLim = [1e-2, 800];
-ax.YTick= [1e-2, 1e-1, 1, 10,60,300];
+ax.YLim = [1e-2, 120];
+ax.YTick= [1e-2, 1e-1, 1, 10, 30, 60, 120];
 ytickformat('%3.2f');
 max_time_minus_fmincon = max(total_time - pursuer_compute_time_solver);
 leg = legend();
-set(leg, 'Location','NorthWest');
+set(leg, 'Location','SouthEast');
 grid on;
 set(gca,'FontSize', fontSize*1.5);
 box on;
@@ -109,26 +100,28 @@ xlabel('Time ($\tau$)','Interpreter','latex');
 ylabel('Computation time (s)','Interpreter','latex');
 set(ax, 'Position', [0.1300    0.1600    0.7750    0.6000]);
 
-% Plot reach probability as a side-by-side plot
+%% Plot reach probability as a side-by-side plot
+t_min = min(feas_list(:,2))-1;
 figure(3)
 clf
 hold on
-h=bar(0:time_horizon, prob_capture_val_matrix(:,1:4),'grouped');
-for i=1:4
+h=bar(0:time_horizon, prob_capture_val_matrix(:,1:6),'grouped');
+for i=1:6
     set(h(i),'FaceColor',pursuer_color_list(i));
 end
 axis([0 time_horizon+1 0 1.1])
 ax=gca();
-ax.XLim =[11,time_horizon];
-ax.XTick=11:time_horizon;
+ax.XLim =[t_min,time_horizon];
+ax.XTick=t_min:1:time_horizon;
 ax.YLim =[0,1];
 ax.YTick=0:0.2:1;
 ax.GridAlpha=0.5;
 ax.FontSize=fontSize*1.5;
 xlabel('Time ($\tau$)','Interpreter','latex');
 ylabel('$\phi_{x}(\bar{z}_{\tau,i},\tau)$','Interpreter','latex');
-leg = legend('Pursuer 1 (Initial guess)','Pursuer 1 (Optimization)','Pursuer 2 (Initial guess)','Pursuer 2 (Optimization)');
-%,'Pursuer 3 (cvx)', 'Pursuer 3 (fmincon)');
+leg = legend('Pursuer 1 (Initial guess)','Pursuer 1 (Optimization)', ...
+             'Pursuer 2 (Initial guess)','Pursuer 2 (Optimization)', ...
+             'Pursuer 3 (Initial guess)','Pursuer 3 (Optimization)');
 set(leg,'location','best');
 set(ax, 'Position', [0.1300    0.1300    0.7750    0.3500])
 % title('Optimal probability of capture for each pursuer');

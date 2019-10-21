@@ -1,11 +1,11 @@
 clearvars;
 clc;
+close all;
 
 addpath('./helperFuns/pursuit');
 total_code_timer = tic;
 %% Global parameters
 fontSize = 20;
-get_layout_plot = false;
 
 %% Construct the approximate map
 pursuit_polytope_defs
@@ -24,7 +24,8 @@ pursuit_target_defs
 %         target_init_state, optimal_input_vec(1:2*time_step), dist_delta, ...
 %         dist_peak);
 % % Monte-Carlo-simulation based validation    
-% relv_sims = concat_state_realization(4*time_step + relv_states,:);    
+% relv_sims = concat_state_realization(target_sys.state_dim * time_step + ...
+%     target_relv_states,:);    
 % prob_mcarlo = sum(query_box.contains(relv_sims))/n_monte_carlo;
 % fprintf('Probability : %1.4f | MonteCarlo probability : %1.4f\n', ...
 %     prob, prob_mcarlo);    
@@ -45,7 +46,7 @@ for t_indx_plus1 = 2:plot_t_skip:time_horizon+1
     %   target_support_position and target_concat_state_realization
     fprintf('Plotting time: %d\n', t_indx_plus1-1);
     plot(target_support_position(t_indx_plus1), 'alpha', 0.2, 'color', 'y');
-    relv_indx = 4*(t_indx_plus1-1) + relv_states;
+    relv_indx = target_sys.state_dim*(t_indx_plus1-1) + target_relv_states;
     scatter(target_concat_state_realization(relv_indx(1),1:skip_mc:end), ...
             target_concat_state_realization(relv_indx(2),1:skip_mc:end), ...
             'ro', 'filled');
@@ -53,14 +54,11 @@ for t_indx_plus1 = 2:plot_t_skip:time_horizon+1
 end
 % Plot mean trajectory
 mean_trajectory = mean(target_concat_state_realization,2);
-plot(mean_trajectory(relv_states(1):4:end), mean_trajectory(relv_states(2):4:end), 'r--', 'linewidth', 2);
+plot(mean_trajectory(target_relv_states(1):target_sys.state_dim:end), ...
+     mean_trajectory(target_relv_states(2):target_sys.state_dim:end), 'r--', ...
+     'linewidth', 2);
 
-if get_layout_plot
-    disp('Layout plot ready');
-    disp('You may want to delete a couple of support polytopes');
-    keyboard
-end
-
+% Stop here if you want to see the layout 
 %% Define catch probability
 catch_box_half_length = 5e-1;
 zero_catch_prob = 1e-4;

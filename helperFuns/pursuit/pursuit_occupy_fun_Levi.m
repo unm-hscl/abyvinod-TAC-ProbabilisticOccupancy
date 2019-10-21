@@ -17,7 +17,7 @@ function [prob, grad_prob] = pursuit_occupy_fun_Levi(query_box, time_step, ...
     end
     
     % Throw a warning if probability outside [-my_zero, 1+my_zero]
-    bounds_on_integral = 30;    % 400
+    bounds_on_integral = 50;    % 400
     my_zero = 1e-4;             % 1e-6
     min_prob = 1e-3;
     [Z, H, G] = sys.getConcatMats(time_step); 
