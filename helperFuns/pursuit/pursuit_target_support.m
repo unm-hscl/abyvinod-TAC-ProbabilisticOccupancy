@@ -4,7 +4,7 @@
 % Computes position sets (projection of reach sets to x,y)
 % Time goes from 0 to time_horizon
 
-target_mat_filename = 'Figure4_target_support.mat';
+target_mat_filename = 'pursuit_target_support.mat';
 elapsed_time_target_support = zeros(time_horizon + 1, 1);
 
 if exist(target_mat_filename, 'file')
@@ -19,19 +19,19 @@ else
     for t_indx = 1:time_horizon
         fprintf('Computing support (position) for time: %d\n', t_indx);        
         relv_indx = 4*(t_indx-1) + relv_states;
-        timer=tic;
+        target_support_timer=tic;
         target_support_position(t_indx) = ...
             target_Z(relv_indx,:) * target_init_state + ...
             target_H(relv_indx, :) * target_affine_vec + ...
             target_G(relv_indx, :) * concat_target_sys_dist_poly;
         target_support_position(t_indx).minHRep();
-        elapsed_time_target_support(t_indx + 1) = toc(timer);
+        elapsed_time_target_support(t_indx + 1) = toc(target_support_timer);
     end
     % Add the t=0 case
-    timer = tic;
+    target_support_timer = tic;
     target_support_position = [Polyhedron('V', target_init_state(relv_states)'), ...
         target_support_position];
-    elapsed_time_target_support(1) = toc(timer);
+    elapsed_time_target_support(1) = toc(target_support_timer);
     
     save(strcat('./helperFuns/',target_mat_filename), ...
         'target_support_position', 'target_Z', 'target_H', ...

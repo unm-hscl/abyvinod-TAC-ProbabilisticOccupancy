@@ -1,15 +1,11 @@
 function polytopic_overapproximation = ...
-             getMinkSumSupportFunBasedOverapproximationPrOccupySetBox(...
+                                       compAlg1Alg2_getMinkSumPrOccupySetBox(...
                                                     obstacle_mu,...
                                                     obstacle_sigma,...
                                                     obstacle_polytope,...
                                                     alpha_value,...
                                                     obstacle_volume,...
                                                     no_of_vectors)
-
-    % Setup
-    Amatrix = zeros(no_of_vectors,2);
-    bmatrix = zeros(no_of_vectors,1);
 
     % Sample equally spaced unit vectors
     theta_vector = linspace(0, 2 * pi, no_of_vectors + 1);
@@ -21,7 +17,21 @@ function polytopic_overapproximation = ...
     probability_threshold = alpha_value/obstacle_volume;
     R_squared = - 2 *  log(sqrt(det(2*pi * obstacle_sigma)) * probability_threshold);
     ellipsoid_shape_matrix = obstacle_sigma * R_squared;
-    bmatrix = Amatrix * obstacle_mu  + sqrt(diag(Amatrix * ellipsoid_shape_matrix * Amatrix')) + obstacle_polytope.support(Amatrix');
+    support_ellipsoid_shape_matrix_sqrt = sqrt(diag(Amatrix * ellipsoid_shape_matrix * Amatrix'));
+
+%   % Via linprog
+%     support_matrix = zeros(no_of_vectors, 1);
+%     for indx = 1:no_of_vectors
+%         [~,support_matrix(indx)] = linprog(Amatrix(indx,:), obstacle_polytope.A, obstacle_polytope.b);
+%     end
+
+%   % Via MPT
+%     support_matrix = obstacle_polytope.support(Amatrix');
+
+%   % Via vertex representation (Boyd 
+    support_matrix = max(Amatrix * obstacle_polytope.V',[],2);
+    
+    bmatrix = Amatrix * obstacle_mu  + support_ellipsoid_shape_matrix_sqrt + support_matrix;
    
     % Overapproximation via polytopes
     polytopic_overapproximation = Polyhedron('H', [Amatrix  bmatrix]);

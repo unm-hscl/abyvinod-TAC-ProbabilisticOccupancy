@@ -126,7 +126,7 @@ ax.YTick=0:0.2:1;
 ax.GridAlpha=0.5;
 ax.FontSize=fontSize*1.5;
 xlabel('Time ($\tau$)','Interpreter','latex');
-ylabel('$\mathrm{CatchPr}(\bar{y}_\tau^{\mathrm{rob}_i},\tau)$','Interpreter','latex');
+ylabel('$\phi_{x}(\bar{z}_{\tau,i},\tau)$','Interpreter','latex');
 leg = legend('Pursuer 1 (Initial guess)','Pursuer 1 (Optimization)','Pursuer 2 (Initial guess)','Pursuer 2 (Optimization)');
 %,'Pursuer 3 (cvx)', 'Pursuer 3 (fmincon)');
 set(leg,'location','best');

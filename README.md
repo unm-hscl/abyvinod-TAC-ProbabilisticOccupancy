@@ -5,15 +5,16 @@
       unicycle dynamics with fixed turning rate sequence and
       velocity as a triangular distributed rv (about 10 with
       end points at 9 and 11).
-2. Figure2.m 
-    - Comparison between Algorithms 1 and 2. Use figure number (1, 2, or 3)
-      within this script to get other plots
+    - This computation took about 20 seconds
+2. Fig6_alg1_vs_alg2.m 
+    - Comparison between Algorithms 1 and 2. Use figure
+      number (1, 2, or 3) within this script to get other
+      plots
 3. Figure3.m
     - Avoid set corresponding to obstacle as a Dubins vehicle --- construct a
       finite union of convex and compact sets
-4. FigurePmf.m
-    - Construct the probability mass function describing the turning rate
-      preferences
+4. pursuit_problem.m
+    - Target pursuit problem
 
 ## Requires
 

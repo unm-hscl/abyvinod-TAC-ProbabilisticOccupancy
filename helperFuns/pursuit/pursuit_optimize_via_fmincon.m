@@ -29,10 +29,10 @@ for feas_list_indx = 1:count_feas
     
     % Get the feasible polytope
     % We use t_indx_plus1 directly since t=0 sets are part of these lists
-    feas_poly = pursuer_interceptable_position_set(pursuer_indx, ...
-            t_indx_plus1, pursuer_cvx_indx).intersect( ...
-                target_support_position(t_indx_plus1));
-    feas_poly_outerapprox = feas_poly.outerApprox;
+%     feas_poly = pursuer_interceptable_position_set(pursuer_indx, ...
+%             t_indx_plus1, pursuer_cvx_indx).intersect( ...
+%                 target_support_position(t_indx_plus1));
+    feas_poly = feas_list_polytope(feas_list_indx);
     
     % Compute target mean position (1 maps to 0) 
     % Z, H, G does not have initial state
@@ -50,7 +50,7 @@ for feas_list_indx = 1:count_feas
     
     
     % Compute initial state via projection (CVX)
-    timer = tic;
+    initial_guess_timer = tic;
     cvx_begin quiet
         variable initial_guess(2,1);
         
@@ -58,17 +58,17 @@ for feas_list_indx = 1:count_feas
         subject to
             feas_poly.A * initial_guess <= feas_poly.b;
     cvx_end
-    elapsed_time_cvx(feas_list_indx) = toc(timer);
+    elapsed_time_cvx(feas_list_indx) = toc(initial_guess_timer);
     
     init_feas_prob_catch_location(:, feas_list_indx) = initial_guess;
     % t_indx_plus1 -1 because t_indx_plus1 starts from 0 and here the
     % correct t_indx is required
     target_affine_vec_slice = target_affine_vec(1:2*(t_indx_plus1-1));
-    catch_prob = @(x) Figure4_occupy_fun_Levi(x + catch_box, t_indx_plus1-1, ...
+    catch_prob = @(x) pursuit_occupy_fun_Levi(x + catch_box, t_indx_plus1-1, ...
         target_sys, relv_states, target_init_state, target_affine_vec_slice, ...
         dist_delta, dist_peak);
 
-    timer = tic;
+    fmincon_solve_timer = tic;
     init_feas_prob_catch_value(feas_list_indx) = catch_prob(initial_guess);
     if init_feas_prob_catch_value(feas_list_indx) >= 1 - zero_catch_prob
         max_feas_prob_catch_location(:, feas_list_indx) = initial_guess;
@@ -82,7 +82,7 @@ for feas_list_indx = 1:count_feas
         if ~use_gradient
             % t_indx_plus1 -1 because t_indx_plus1 starts from 0 and here the
             % correct t_indx is required
-            obj = @(x) -log(Figure4_occupy_fun_Levi(...
+            obj = @(x) -log(pursuit_occupy_fun_Levi(...
                 x + catch_box, t_indx_plus1 - 1, target_sys, relv_states, ...
                 target_init_state, target_affine_vec_slice, dist_delta, ...
                 dist_peak, false));
@@ -100,7 +100,19 @@ for feas_list_indx = 1:count_feas
         fprintf('Catch probability: %1.4f\n', exp(-F));
         max_feas_prob_catch_value(feas_list_indx) = exp(-F);         
     end 
-    elapsed_time_fmincon(feas_list_indx) = toc(timer);
+    elapsed_time_fmincon(feas_list_indx) = toc(fmincon_solve_timer);
     fprintf('Elapsed time: %1.2f s (cvx+fmincon)\n', ...
         elapsed_time_cvx(feas_list_indx) + elapsed_time_fmincon(feas_list_indx));
+end
+
+function [neg_log_prob, grad_after_log] = obj_with_grad(x, catch_box, t_indx,...
+            target_sys, relv_states, target_init_state, ...
+            target_affine_vec_slice, dist_delta, dist_peak)
+    [prob, grad] = pursuit_occupy_fun_Levi(x + catch_box, t_indx, target_sys,...
+                    relv_states, target_init_state, target_affine_vec_slice, ...
+                    dist_delta, dist_peak, true);
+    neg_log_prob = -log(prob);
+    if prob >= 1e-6
+        grad_after_log = -grad/prob;
+    end
 end

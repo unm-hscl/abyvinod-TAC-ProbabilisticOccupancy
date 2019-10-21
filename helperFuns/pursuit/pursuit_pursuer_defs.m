@@ -18,7 +18,7 @@ pursuer_sys = LtiSystem('StateMatrix', pursuer_sys_state_mat, ...
                         'InputSpace', pursuer_input_space);
 
 % Obtain the pursuer reach set with zero state and unit input                        
-Figure4_pursuer_unit_input_position_set
+pursuit_pursuer_unit_input_position_set
 % elapsed_time_pursuer_reach
 if ~exist('elapsed_time_pursuer_reach','var')
     throw('Expected elapsed_time_pursuer_reach to be defined from '+ ...
@@ -48,7 +48,7 @@ for t_indx_plus1 = 1:1:time_horizon+1
     % Time goes from 0 to time_horizon for both
     %   pursuer_position_set_zero_input and 
     %   pursuer_position_sets_zero_state_unit_input
-    timer = tic;
+    pursuer_reach_timer = tic;
     for pursuer_indx = 1:3
         % A 2x(time_horizon + 1) matrix of pursuer positions (under natural
         % dynamics)
@@ -85,5 +85,5 @@ for t_indx_plus1 = 1:1:time_horizon+1
         end
     end
     elapsed_time_pursuer_reach(t_indx_plus1) = elapsed_time_pursuer_reach(t_indx_plus1) +... 
-        toc(timer);
+        toc(pursuer_reach_timer);
 end

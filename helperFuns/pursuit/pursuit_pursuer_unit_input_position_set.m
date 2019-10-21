@@ -2,7 +2,7 @@
 % Computes position sets (projection of reach sets to x,y)
 % Time goes from 0 to time_horizon
 
-pursuer_mat_filename = 'Figure4_pursuer_position_set.mat';
+pursuer_mat_filename = 'pursuit_pursuer_position_set.mat';
 elapsed_time_pursuer_reach = zeros(time_horizon + 1, 1);
 
 if exist(pursuer_mat_filename, 'file')
