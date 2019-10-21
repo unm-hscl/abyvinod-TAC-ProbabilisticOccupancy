@@ -1,9 +1,10 @@
 # TAC_FSRPD
 
-1. Figure1_triangle.m
-    - FSR analysis (95% confidence region and support) of unicycle dynamics with
-      fixed turning rate sequence and velocity as a triangular distributed rv
-      (about 5 with end points at 4 and 6).
+1. Fig3_FSR_and_conf_sets_triangle.m
+    - FSR analysis (95% confidence region and support) of
+      unicycle dynamics with fixed turning rate sequence and
+      velocity as a triangular distributed rv (about 10 with
+      end points at 9 and 11).
 2. Figure2.m 
     - Comparison between Algorithms 1 and 2. Use figure number (1, 2, or 3)
       within this script to get other plots
