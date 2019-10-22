@@ -10,11 +10,12 @@
     - Comparison between Algorithms 1 and 2. Use figure
       number (1, 2, or 3) within this script to get other
       plots
-3. Figure3.m
-    - Avoid set corresponding to obstacle as a Dubins vehicle --- construct a
-      finite union of convex and compact sets
-4. pursuit_problem.m
+3. pursuit_problem.m
     - Target pursuit problem
+4. Fig10_avoid_set.m
+    - Avoid set corresponding to obstacle as a Dubins
+      vehicle --- construct a finite union of convex and
+      compact sets
 
 ## Requires
 

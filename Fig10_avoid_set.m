@@ -1,10 +1,10 @@
 clear
 close all;
 clc;
-addpath('helperFuns/');
+addpath('helperFuns/Fig10/');
 
 figure_number = 4; %3-4
-
+fontSize = 30;
 sampling_time = 0.05;
 probability_threshold = 1 - 0.99;
 no_of_vectors_MinkSum = 50;
@@ -164,7 +164,7 @@ box on
 grid on
 xlabel('x');
 ylabel('y');
-set(gca,'FontSize',20);
+set(gca,'FontSize', fontSize);
 color_scatter = ['bx';'bo';'bd';'bs';'b+';'rx';'ro';'rd';'rs';'r+';'kx';'ko';'kd';'ks';'k+';'mx';'mo';'md';'ms';'m+';'cx';'co';'cd';'cs';'c+';'yx';'yo';'yd';'ys';'y+';'gx';'go';'gd';'gs';'g+';];
 hold on
 for indx_indx_sequence = 1:no_nnz_prob_sequences
@@ -192,5 +192,6 @@ for indx_indx_sequence = 1:no_nnz_prob_sequences
     end
 end
 checkAvoidSetUsingMonteCarlo
-disp(elapsed_time)
-disp(elapsed_time_MC)
+%% Report times
+fprintf('Elapsed time\n    MC | Alg. 2\n %1.3f | %1.3f\n', elapsed_time_MC, ...
+    elapsed_time)
