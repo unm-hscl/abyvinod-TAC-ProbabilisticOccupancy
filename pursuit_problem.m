@@ -6,6 +6,7 @@ addpath('./helperFuns/pursuit');
 total_code_timer = tic;
 %% Global parameters
 fontSize = 20;
+plot_layout_only = 1;
 
 %% Construct the approximate map
 pursuit_polytope_defs
@@ -41,22 +42,8 @@ pursuit_target_support
 target_concat_state_realization = generateMonteCarloSims(n_monte_carlo, ...
     target_sys, target_init_state, time_horizon, target_affine_vec);
 
-for t_indx_plus1 = 2:plot_t_skip:time_horizon+1
-    % Time goes from 0 to time_horizon for both
-    %   target_support_position and target_concat_state_realization
-    fprintf('Plotting time: %d\n', t_indx_plus1-1);
-    plot(target_support_position(t_indx_plus1), 'alpha', 0.2, 'color', 'y');
-    relv_indx = target_sys.state_dim*(t_indx_plus1-1) + target_relv_states;
-    scatter(target_concat_state_realization(relv_indx(1),1:skip_mc:end), ...
-            target_concat_state_realization(relv_indx(2),1:skip_mc:end), ...
-            'ro', 'filled');
-    drawnow
-end
-% Plot mean trajectory
-mean_trajectory = mean(target_concat_state_realization,2);
-plot(mean_trajectory(target_relv_states(1):target_sys.state_dim:end), ...
-     mean_trajectory(target_relv_states(2):target_sys.state_dim:end), 'r--', ...
-     'linewidth', 2);
+%% Plot environment
+pursuit_plot_environment;
 
 % Stop here if you want to see the layout 
 %% Define catch probability
@@ -104,6 +91,8 @@ pursuit_optimize_via_fmincon
 pursuit_plot_results
 
 %% Final touches to the plot
+plot_layout_only = 0;
+pursuit_plot_environment;
 figure(1);
 axis equal;
 xlim([-2,37]);

@@ -65,7 +65,7 @@ computeTime_linewidth = 3;
 stem(0:time_horizon, elapsed_time_feas_poly + elapsed_time_pursuer_reach + ...
     elapsed_time_target_support, 'ms', 'filled', ...
     'MarkerSize', computeTime_markerSize, 'LineWidth', computeTime_linewidth,...
-    'DisplayName', 'Feasibility check');
+    'DisplayName', 'Feasibility');
 stem(0:time_horizon, pursuer_compute_time_cvx, 'bo', 'filled', ...
     'MarkerSize', computeTime_markerSize, 'LineWidth', computeTime_linewidth,...
     'DisplayName', 'Initial guess');
@@ -80,50 +80,56 @@ stem(0:time_horizon, total_time, 'kp', 'filled',  ...
     'DisplayName', 'Total time');
 % h = plot(0:time_horizon, 10 *ones(time_horizon+1,1), 'k--');
 % h.Annotation.LegendInformation.IconDisplayStyle = 'off';
-h = plot(0:time_horizon, 60 *ones(time_horizon+1,1), 'k--');
-h.Annotation.LegendInformation.IconDisplayStyle = 'off';
-dim = [0.35    0.61    0.09    0.115]; 
-t=annotation('textbox',dim,'String','1 min.','FitBoxToText','on', ...
-    'FontSize',fontSize*1.5,'EdgeColor','w');
+% h = plot(0:time_horizon, 60 *ones(time_horizon+1,1), 'k--');
+% h.Annotation.LegendInformation.IconDisplayStyle = 'off';
+% dim = [0.35 0.71 0.09 0.06];
+% t=annotation('textbox',dim,'String','1 min.','FitBoxToText','on', ...
+%     'FontSize',fontSize*1.5,'EdgeColor','w');
 ax = gca;
 ax.YScale = 'log';
-ax.YLim = [1e-2, 120];
-ax.YTick= [1e-2, 1e-1, 1, 10, 30, 60, 120];
+ax.YLim = [1e-2, 60];
+ax.YTick= [1e-2, 1e-1, 1, 10, 60];
 ytickformat('%3.2f');
 max_time_minus_fmincon = max(total_time - pursuer_compute_time_solver);
-leg = legend();
-set(leg, 'Location','SouthEast');
-grid on;
 set(gca,'FontSize', fontSize*1.5);
+leg = legend('Location','SouthEast','NumColumns',4);
+grid on;
 box on;
 xlabel('Time ($\tau$)','Interpreter','latex');
 ylabel('Computation time (s)','Interpreter','latex');
-set(ax, 'Position', [0.1300    0.1600    0.7750    0.6000]);
+set(ax,'Position',[0.1471 0.1838 0.8224 0.5762])
 
 %% Plot reach probability as a side-by-side plot
 t_min = min(feas_list(:,2))-1;
+% reach_probs_to_plot = 2:2:6;
+reach_probs_to_plot = 1:6;
 figure(3)
 clf
 hold on
-h=bar(0:time_horizon, prob_capture_val_matrix(:,1:6),'grouped');
-for i=1:6
-    set(h(i),'FaceColor',pursuer_color_list(i));
+h=bar(0:time_horizon, prob_capture_val_matrix(:,reach_probs_to_plot),'grouped');
+for indx=reach_probs_to_plot
+%     set(h(i/2),'FaceColor',pursuer_color_list(i));
+    set(h(indx),'FaceColor',pursuer_color_list(indx));
 end
 axis([0 time_horizon+1 0 1.1])
 ax=gca();
 ax.XLim =[t_min,time_horizon];
-ax.XTick=t_min:1:time_horizon;
+ax.XTick=t_min:2:time_horizon;
 ax.YLim =[0,1];
 ax.YTick=0:0.2:1;
 ax.GridAlpha=0.5;
 ax.FontSize=fontSize*1.5;
 xlabel('Time ($\tau$)','Interpreter','latex');
 ylabel('$\phi_{x}(\bar{z}_{\tau,i},\tau)$','Interpreter','latex');
-leg = legend('Pursuer 1 (Initial guess)','Pursuer 1 (Optimization)', ...
-             'Pursuer 2 (Initial guess)','Pursuer 2 (Optimization)', ...
-             'Pursuer 3 (Initial guess)','Pursuer 3 (Optimization)');
-set(leg,'location','best');
-set(ax, 'Position', [0.1300    0.1300    0.7750    0.3500])
+leg = legend('Patrol robot 1 (Initial guess)','Patrol robot 1 (Optimization)', ...
+             'Patrol robot 2 (Initial guess)','Patrol robot 2 (Optimization)', ...
+             'Patrol robot 3 (Initial guess)','Patrol robot 3 (Optimization)');
+set(leg,'Position', [0.2638 0.1953 0.3769 0.4324],'NumColumns', 1);
+% leg = legend('Patrol robot 1', ...
+%              'Patrol robot 2', ...
+%              'Patrol robot 3');
+% set(leg,'location','best','NumColumns', 3);
+set(ax, 'Position', [0.1091 0.1849 0.8645 0.4518])
 % title('Optimal probability of capture for each pursuer');
 grid on
 box on

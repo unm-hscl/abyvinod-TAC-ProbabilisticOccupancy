@@ -9,7 +9,8 @@ pursuer3_initial_state = [27;0;1.5;0];
 pursuer_u_limit = 4;
 
 % Pursuer system definitions
-sys_DI_1D = getChainOfIntegLtiSystem(2, 0.1, Polyhedron('lb',-1,'ub',1));
+sys_DI_1D = getChainOfIntegLtiSystem(2, sampling_time, ...
+    Polyhedron('lb',-1,'ub',1));
 pursuer_sys_state_mat = blkdiag(sys_DI_1D.state_mat, sys_DI_1D.state_mat);
 pursuer_sys_input_mat = blkdiag(sys_DI_1D.input_mat, sys_DI_1D.input_mat);
 pursuer_input_space = Polyhedron('lb',-[1;1],'ub',[1;1]);
@@ -48,7 +49,7 @@ pursuer_team_position_set_zero_input = [
     pursuer2_initial_state(pursuer_relv_states,1), pursuer_position_set_2_zero_input;
     pursuer3_initial_state(pursuer_relv_states,1), pursuer_position_set_3_zero_input];
 pursuer_interceptable_position_set = [ones(2,0)*Polyhedron()];
-for t_indx_plus1 = 1:1:time_horizon+1
+for t_indx_plus1 = 1:time_horizon+1
     % Time goes from 0 to time_horizon for both
     %   pursuer_position_set_zero_input and 
     %   pursuer_position_sets_zero_state_unit_input
@@ -75,17 +76,6 @@ for t_indx_plus1 = 1:1:time_horizon+1
                             pursuer_indx, t_indx_plus1, poly_indx) = ...
                 pursuer_actual_position_set.intersect( ...
                     pursuer_cvx(pursuer_indx, poly_indx));
-            
-            if ~pursuer_interceptable_position_set( ...
-                            pursuer_indx, t_indx_plus1, poly_indx).isEmptySet() && ...
-                    abs(mod(t_indx_plus1, plot_t_skip))<1e-8
-                fprintf('Plotting time for pursuer %d: %d\n', pursuer_indx, ...
-                    t_indx_plus1-1);
-                plot(pursuer_interceptable_position_set( ...
-                            pursuer_indx, t_indx_plus1, poly_indx), ...
-                    'alpha', 0.2, 'color', 'm');
-                drawnow
-            end
         end
     end
     elapsed_time_pursuer_reach(t_indx_plus1) = elapsed_time_pursuer_reach(t_indx_plus1) +... 

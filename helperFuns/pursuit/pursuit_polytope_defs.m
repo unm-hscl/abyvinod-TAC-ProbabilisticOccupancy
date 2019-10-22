@@ -58,24 +58,3 @@ pursuer_cvx(3,3) = Polyhedron('V', ...
      25.5, 9;
      20.5, 6.15;
      21.5, 9]);
- 
-% Plot
-plot(area_of_interest, 'color', 'b', 'alpha',0.2);
-hold on;
-plot(pursuer_cvx(1,1), 'color', 'g', 'alpha',0.4);
-plot(pursuer_cvx(1,2), 'color', 'g', 'alpha',0.4);
-plot(pursuer_cvx(1,3), 'color', 'g', 'alpha',0.4);
-plot(pursuer_cvx(2,1), 'color', 'g', 'alpha',0.4);
-plot(pursuer_cvx(2,2), 'color', 'g', 'alpha',0.4);
-plot(pursuer_cvx(2,3), 'color', 'g', 'alpha',0.4);
-plot(pursuer_cvx(3,1), 'color', 'g', 'alpha',0.4);
-plot(pursuer_cvx(3,2), 'color', 'g', 'alpha',0.4);
-plot(pursuer_cvx(3,3), 'color', 'g', 'alpha',0.4);
-axis equal;
-box on;
-set(gca,'FontSize',fontSize*2);
-grid on;
-xlim([-2,37]);
-ylim([-2,15]);
-xlabel('x','Interpreter','latex');
-ylabel('y','Interpreter','latex');
