@@ -18,7 +18,7 @@ plot_t_skip = 3;
 %                      repmat([15;15], 5, 1);
 %                      repmat([15;-0.5], 10, 1)];
 % time_horizon = length(target_affine_vec)/2;
-% sys_DI_1D = getChainOfIntegLtiSystem(2, 0.1, Polyhedron('lb',-1,'ub',1));
+% sys_DI_1D = getChainOfIntegLtiSystem(2, sampling_time, Polyhedron('lb',-1,'ub',1));
 % target_sys_state_mat = blkdiag(sys_DI_1D.state_mat, sys_DI_1D.state_mat);
 % target_sys_input_mat = blkdiag(sys_DI_1D.input_mat, sys_DI_1D.input_mat);
 % target_sys_dist_mat = blkdiag(sys_DI_1D.input_mat, sys_DI_1D.input_mat);

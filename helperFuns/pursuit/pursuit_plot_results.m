@@ -92,7 +92,7 @@ ax.YTick= [1e-2, 1e-1, 1, 10, 60];
 ytickformat('%3.2f');
 max_time_minus_fmincon = max(total_time - pursuer_compute_time_solver);
 set(gca,'FontSize', fontSize*1.5);
-leg = legend('Location','SouthEast','NumColumns',4);
+leg = legend('Location','South','NumColumns',4);
 grid on;
 box on;
 xlabel('Time ($\tau$)','Interpreter','latex');

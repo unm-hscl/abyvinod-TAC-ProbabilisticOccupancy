@@ -5,7 +5,7 @@ close all;
 addpath('./helperFuns/pursuit');
 total_code_timer = tic;
 %% Global parameters
-fontSize = 20;
+fontSize = 30;
 plot_layout_only = 1;
 
 %% Construct the approximate map
