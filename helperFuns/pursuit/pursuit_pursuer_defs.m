@@ -5,8 +5,8 @@
 pursuer_relv_states = [1,3];
 pursuer1_initial_state = [8;0;0.5;0];
 pursuer2_initial_state = [15;0;10;0];
-pursuer3_initial_state = [27;0;1.5;0];
-pursuer_u_limit = 4;
+pursuer3_initial_state = [27.5;0;3.5;0];
+pursuer_u_limit = 10;
 
 % Pursuer system definitions
 sys_DI_1D = getChainOfIntegLtiSystem(2, sampling_time, ...

@@ -73,6 +73,10 @@ else
         prob_values = max_feas_prob_catch_value(pursuer_valid_indx);
         [max_prob, prob_indx] = max(prob_values);
         best_feas_list_arg = pursuer_valid_indx(prob_indx);
+        if isempty(best_feas_list_arg)
+            fprintf('Pursuer %d can not intercept the target\n', pursuer_indx);
+            continue
+        end
         
         opt_intercept_t = feas_list(best_feas_list_arg,2) - 1;
         t_plus1_vec = [t_plus1_vec, opt_intercept_t + 1];
@@ -111,7 +115,7 @@ else
             max_feas_prob_catch_location(:, best_feas_list_arg);
         plot(pursuer_catch_box, 'alpha', 0.3, 'color', 'b')
         mc_prob_estim = sum(pursuer_catch_box.contains( ...
-            target_concat_state_realization(target_relv_indx,1:skip_mc:end)))...
+            target_concat_state_realization(target_relv_indx,:)))...
             /n_monte_carlo;
         fprintf('Prob: %1.4f | MC Estim. Prob: %1.4f\n', max_prob, mc_prob_estim);
     end    

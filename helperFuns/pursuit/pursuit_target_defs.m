@@ -1,8 +1,8 @@
 % Target dynamics
 srtinit
 
-n_monte_carlo = 1e3;
-skip_mc = 1;                        %Skip MC particles
+n_monte_carlo = 1e4;
+skip_mc = 1e2;                        %Skip MC particles
 plot_t_skip = 3;
 
 % %% Target system definition
