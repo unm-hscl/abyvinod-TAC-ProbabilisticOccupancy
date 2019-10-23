@@ -1,5 +1,5 @@
 elapsed_time_solver = elapsed_time_fmincon;
-pursuer_color_list=['g','b','k','m','c','r'];
+pursuer_color_list=['g','b','m','k','c','r'];
 
 % Decode the feas_list into indexed time stamps
 enum_feas_list = [feas_list, (1:count_feas)'];
@@ -101,15 +101,15 @@ set(ax,'Position',[0.1471 0.1838 0.8224 0.5762])
 
 %% Plot reach probability as a side-by-side plot
 t_min = min(feas_list(:,2))-1;
-% reach_probs_to_plot = 2:2:6;
-reach_probs_to_plot = 1:6;
+reach_probs_to_plot = 2:2:6;
+% reach_probs_to_plot = 1:6;
 figure(3)
 clf
 hold on
 h=bar(0:time_horizon, prob_capture_val_matrix(:,reach_probs_to_plot),'grouped');
 for indx=reach_probs_to_plot
-%     set(h(i/2),'FaceColor',pursuer_color_list(i));
-    set(h(indx),'FaceColor',pursuer_color_list(indx));
+    set(h(indx/2),'FaceColor',pursuer_color_list(indx));
+%     set(h(indx),'FaceColor',pursuer_color_list(indx));
 end
 axis([0 time_horizon+1 0 1.1])
 ax=gca();
@@ -121,14 +121,14 @@ ax.GridAlpha=0.5;
 ax.FontSize=fontSize*1.5;
 xlabel('Time ($\tau$)','Interpreter','latex');
 ylabel('$\phi_{x}(\bar{z}_{\tau,i},\tau)$','Interpreter','latex');
-leg = legend('Patrol robot 1 (Initial guess)','Patrol robot 1 (Optimization)', ...
-             'Patrol robot 2 (Initial guess)','Patrol robot 2 (Optimization)', ...
-             'Patrol robot 3 (Initial guess)','Patrol robot 3 (Optimization)');
-set(leg,'Position', [0.2638 0.1953 0.3769 0.4324],'NumColumns', 1);
-% leg = legend('Patrol robot 1', ...
-%              'Patrol robot 2', ...
-%              'Patrol robot 3');
-% set(leg,'location','best','NumColumns', 3);
+% leg = legend('Patrol robot 1 (Initial guess)','Patrol robot 1 (Optimization)', ...
+%              'Patrol robot 2 (Initial guess)','Patrol robot 2 (Optimization)', ...
+%              'Patrol robot 3 (Initial guess)','Patrol robot 3 (Optimization)');
+% set(leg,'Position', [0.2638 0.1953 0.3769 0.4324],'NumColumns', 1);
+leg = legend('Patrol robot 1', ...
+             'Patrol robot 2', ...
+             'Patrol robot 3');
+set(leg,'location','best')%,'NumColumns', 3);
 set(ax, 'Position', [0.1091 0.1849 0.8645 0.4518])
 % title('Optimal probability of capture for each pursuer');
 grid on
