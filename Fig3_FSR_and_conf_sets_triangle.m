@@ -128,8 +128,8 @@ for t=1:time_horizon
                      -curr_dir * x_unpert - low_qf;
                       curr_dir * x_unpert + high_qf];
             else
-                fprintf(['Skipped a direction (t=%d, dir indx = %d) since ', ...
-                    'imaginary limits found!\n'], t, curr_dir_indx);
+%                 fprintf(['Skipped a direction (t=%d, dir indx = %d) since ', ...
+%                     'imaginary limits found!\n'], t, curr_dir_indx);
             end
         end
         % Construct the polytope --- it is an overapproximation, so intersect it
