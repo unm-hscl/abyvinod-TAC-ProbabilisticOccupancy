@@ -3,7 +3,6 @@ srtinit
 
 n_monte_carlo = 1e4;
 skip_mc = 1e2;                        %Skip MC particles
-plot_t_skip = 3;
 
 % %% Target system definition
 % % Double integrator-based approach
@@ -37,17 +36,17 @@ plot_t_skip = 3;
 
 % Dubins vehicle dynamics
 target_relv_states = [1,2];
-sampling_time = 0.05;                           % Sampling time
+sampling_time = 0.1;                           % Sampling time
 initial_heading = -pi;                       % Initial heading 
 target_init_state = [15;-0.5];
 turning_rate_seq = [0*ones(1,3), ...
+                    -2.5*ones(1,3), ...
                     -5*ones(1,3), ...
-                    -10*ones(1,3), ...
-                    -5*ones(1,2), ...
+                    -2.5*ones(1,2), ...
                     0*ones(1,14)];
 time_horizon = length(turning_rate_seq);
-dist_delta = 5;
-dist_peak = 20;
+dist_delta = 2.5;
+dist_peak = 10;
 dist_min = dist_peak - dist_delta;
 dist_max = dist_peak + dist_delta;
 dist_mean = dist_peak;

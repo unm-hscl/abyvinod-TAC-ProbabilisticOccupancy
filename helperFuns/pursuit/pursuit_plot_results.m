@@ -100,34 +100,41 @@ ylabel('Computation time (s)','Interpreter','latex');
 set(ax,'Position',[0.1471 0.1838 0.8224 0.5762])
 
 %% Plot reach probability as a side-by-side plot
-t_min = min(feas_list(:,2))-1;
-reach_probs_to_plot = 2:2:6;
-% reach_probs_to_plot = 1:6;
+% t_min = min(feas_list(:,2))-1;
+fprintf('\n\n\n>>> Only showing specific reach probabilities and ignoring patrol robot 1\n\n\n');
+t_min = 15;
+reach_probs_to_plot = 4:2:6;  % Set this to 2:2:6 for patrol robot 1
 figure(3)
 clf
 hold on
+% (:,reach_probs_to_plot)
 h=bar(0:time_horizon, prob_capture_val_matrix(:,reach_probs_to_plot),'grouped');
-for indx=reach_probs_to_plot
-    set(h(indx/2),'FaceColor',pursuer_color_list(indx));
+% h=bar(0:time_horizon, prob_capture_val_matrix,'grouped');
+for indx=1:length(reach_probs_to_plot)
+    set(h(indx),'FaceColor',pursuer_color_list(reach_probs_to_plot(indx)));
 %     set(h(indx),'FaceColor',pursuer_color_list(indx));
 end
 axis([0 time_horizon+1 0 1.1])
 ax=gca();
 ax.XLim =[t_min,time_horizon];
 ax.XTick=t_min:2:time_horizon;
+% ax.YLim =[0.001,1];
+% ax.YTick=sort([logspace(-3, 0, 5), 0.5]);
+% ax.YScale = 'log';
+% ytickformat('%,.2f')
 ax.YLim =[0,1];
 ax.YTick=0:0.2:1;
 ax.GridAlpha=0.5;
 ax.FontSize=fontSize*1.5;
 xlabel('Time ($\tau$)','Interpreter','latex');
-ylabel('$\phi_{x}(\bar{z}_{\tau,i},\tau)$','Interpreter','latex');
+% ylabel('$\phi_{x}(\bar{z}_{\tau,i},\tau)$','Interpreter','latex');
+ylabel('Catch probability','Interpreter','latex');
 % leg = legend('Patrol robot 1 (Initial guess)','Patrol robot 1 (Optimization)', ...
 %              'Patrol robot 2 (Initial guess)','Patrol robot 2 (Optimization)', ...
 %              'Patrol robot 3 (Initial guess)','Patrol robot 3 (Optimization)');
 % set(leg,'Position', [0.2638 0.1953 0.3769 0.4324],'NumColumns', 1);
-leg = legend('Patrol robot 1', ...
-             'Patrol robot 2', ...
-             'Patrol robot 3');
+leg = legend('Patrol robot 2', ...
+             'Patrol robot 3'); 'Patrol robot 1', ...             
 set(leg,'location','best')%,'NumColumns', 3);
 set(ax, 'Position', [0.1091 0.1849 0.8645 0.4518])
 % title('Optimal probability of capture for each pursuer');
