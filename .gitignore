@@ -24,3 +24,4 @@ pythonrun
 *.synctex.gz
 *.gnuplot
 figs/Figure1_triangle.fig
+figs/*_console.txt

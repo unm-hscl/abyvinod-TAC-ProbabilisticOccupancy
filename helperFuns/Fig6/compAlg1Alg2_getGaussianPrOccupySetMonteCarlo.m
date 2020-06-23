@@ -25,25 +25,23 @@
 function [xvec,...
           yvec,...
           frequency,...
-          other_values]=compAlg1Alg2_get_Gaussian_PrOccupySet_via_MonteCarlo(...
+          other_values]=compAlg1Alg2_getGaussianPrOccupySetMonteCarlo(...
                                                no_of_MC_points,...
-                                               no_of_grid_points,...
+                                               no_of_grid_points_1D,...
                                                obstacle_mu,...
                                                obstacle_sigma,...
                                                obstacle_size)
 
     boundary_distance_from_mean = 3*max(sqrt(eig(obstacle_sigma))) ...
                                     + 2 * obstacle_size;
-    no_of_grid_points_x = no_of_grid_points;
-    no_of_grid_points_y = no_of_grid_points;
     grid_min_x = obstacle_mu(1) - boundary_distance_from_mean;
     grid_max_x = obstacle_mu(1) + boundary_distance_from_mean;
     grid_min_y = obstacle_mu(2) - boundary_distance_from_mean;
     grid_max_y = obstacle_mu(2) + boundary_distance_from_mean;
     
     % Xvec and yvec creation
-	xvec = linspace(grid_min_x,grid_max_x,no_of_grid_points_x);
-    yvec = linspace(grid_min_y,grid_max_y,no_of_grid_points_y);
+	xvec = linspace(grid_min_x, grid_max_x, no_of_grid_points_1D);
+    yvec = linspace(grid_min_y, grid_max_y, no_of_grid_points_1D);
 
     % For index finding: Computation of step size
     xvec_step_size = xvec(2) - xvec(1);
@@ -53,8 +51,8 @@ function [xvec,...
     x_obstacle_size_in_grid_steps = round(obstacle_size/xvec_step_size);
     y_obstacle_size_in_grid_steps = round(obstacle_size/yvec_step_size);
 
-    % Initialize the histogram matrix
-    frequency = zeros(no_of_grid_points_y,no_of_grid_points_x);
+    % Initialize the histogram matrix - First y and then x
+    frequency = zeros(no_of_grid_points_1D, no_of_grid_points_1D);
 
     % Create mvn random samples
     mvn_samples = mvnrnd(obstacle_mu', obstacle_sigma, no_of_MC_points);
@@ -66,15 +64,22 @@ function [xvec,...
         % Compute the index point and round it off to stay within xvec and yvec
         x_indx_point_orig = round((point_of_interest(1) - grid_min_x)/xvec_step_size)+1;
         y_indx_point_orig = round((point_of_interest(2) - grid_min_y)/yvec_step_size)+1;
-        x_indx_point = min(max(x_indx_point_orig,1),no_of_grid_points_x);
-        y_indx_point = min(max(y_indx_point_orig,1),no_of_grid_points_y);
-        % Compute around the point_of_interest the box which is occupied the
-        % obstacle
-        x_iterates = max(x_indx_point - x_obstacle_size_in_grid_steps,1):min(x_indx_point + x_obstacle_size_in_grid_steps,no_of_grid_points_x);
-        y_iterates = max(y_indx_point - y_obstacle_size_in_grid_steps,1):min(y_indx_point + y_obstacle_size_in_grid_steps,no_of_grid_points_y);
+        x_indx_point = min(max(x_indx_point_orig,1),no_of_grid_points_1D);
+        y_indx_point = min(max(y_indx_point_orig,1),no_of_grid_points_1D);
 
+        % Compute all the grid points that are covered by the obstacle of
+        % the given size
+        lb_x_iterates = max(x_indx_point - x_obstacle_size_in_grid_steps, 1);
+        ub_x_iterates = min(x_indx_point + x_obstacle_size_in_grid_steps, ...
+            no_of_grid_points_1D);
+        x_iterates = lb_x_iterates:ub_x_iterates;
+        lb_y_iterates = max(y_indx_point - y_obstacle_size_in_grid_steps, 1);
+        ub_y_iterates = min(y_indx_point + y_obstacle_size_in_grid_steps, ...
+            no_of_grid_points_1D);       
+        y_iterates = lb_y_iterates:ub_y_iterates;
         % Increment the frequency in these states by 1
-        frequency(y_iterates, x_iterates) = frequency(y_iterates, x_iterates) + 1;
+        frequency(y_iterates, x_iterates) = ...
+            frequency(y_iterates, x_iterates) + 1;
     end
     disp('Completed the histogram');
 

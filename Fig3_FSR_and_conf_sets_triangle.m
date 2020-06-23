@@ -3,17 +3,26 @@
 
 % We perform uniform risk allocation along n_curr_dir, so that collectively the 
 % risk of the state NOT lying in the characterized polytope is below 0.05. We 
-% have use Boole's inequality in the uniform risk allocation. Along each
-% vector direction, we compute the quantile at indiv_prob_thresh and 1 -
-% indiv_prob_thresh to get the vertices, where indiv_prob_thresh = (0.05/N)/2
+% use uniform risk allocation to split this joint chance constraint into 
+% individual chance constraints using Boole's inequality. Consequently, along 
+% each vector direction, we obtain two vertices of the polytopes via the 
+% quantile function evaluated at indiv_prob_thresh and 1 - indiv_prob_thresh.
+% Here, indiv_prob_thresh = (0.05/N * 2) with N direction vectors by
+% uniform risk allocation (allocate risk to 2N hyperplanes). The resulting
+% polytope (in V-Rep) is a guaranteed subset of the 0.95-confidence region.
 
 clear;clc;close all;
+diary off;
+diary('figs/Figure3_console.txt');
+diary on;
+fprintf('\nNew experiment\n\n%s\n', datestr(now, 'DD mmmm, YYYY HH:MM:SS'));
 
 % No plotting
 cf_options.isPlot = false;
 
 % Distribution of chance constraints --- make sure math is correct
 n_monte_carlo_sims = 1e5;
+skip_monte_carlo_plot = 1;                  % Skip plotting in scatter plot
 joint_prob_thresh = 0.05;                   % \Delta
 max_half_n_curr_dir = 20;                   % no_of_dir => Actual polytope can
                                             % have up to 2*n_curr_dir (up to
@@ -150,8 +159,9 @@ concat_state_realization = generateMonteCarloSims(n_monte_carlo_sims, sys, ...
     init_location, time_horizon);
 % Add to the plot the points from the Monte-Carlo simulation
 for t=1:time_horizon+1
-    scatter(concat_state_realization(2*t-1,:), ...
-        concat_state_realization(2*t,:),10,'ko','filled')
+    scatter(concat_state_realization(2*t-1,1:skip_monte_carlo_plot:end), ...
+            concat_state_realization(2*t,1:skip_monte_carlo_plot:end), ...
+            10, 'ko', 'filled')
 end
 axis tight;
 drawnow;
@@ -171,3 +181,6 @@ for t= 4:time_horizon
         nnz(flag)/n_monte_carlo_sims);    
 end
 axis equal;
+savefig(gcf, 'figs/Unicycle_FSR_and_95_conf_region.fig', 'compact');
+saveas(gcf, 'figs/Unicycle_FSR_and_95_conf_region.png');
+diary off;
