@@ -1,22 +1,29 @@
 % Computation previously took 21 seconds
 % Obtain the triangle distribution-based FSR
 
+% We perform uniform risk allocation along n_curr_dir, so that collectively the 
+% risk of the state NOT lying in the characterized polytope is below 0.05. We 
+% have use Boole's inequality in the uniform risk allocation. Along each
+% vector direction, we compute the quantile at indiv_prob_thresh and 1 -
+% indiv_prob_thresh to get the vertices, where indiv_prob_thresh = (0.05/N)/2
+
 clear;clc;close all;
 
 % No plotting
 cf_options.isPlot = false;
 
 % Distribution of chance constraints --- make sure math is correct
+n_monte_carlo_sims = 1e5;
 joint_prob_thresh = 0.05;                   % \Delta
-n_curr_dir = 20;                             % no_of_dir => Actual polytope can
+max_half_n_curr_dir = 20;                   % no_of_dir => Actual polytope can
                                             % have up to 2*n_curr_dir (up to
                                             % because CharFunTool may fail in
                                             % some directions 
 % delta_i = \Delta/N/2   (/2 because we repeat both directions)
-indiv_prob_thresh = joint_prob_thresh/n_curr_dir/2;
+indiv_prob_thresh = joint_prob_thresh/max_half_n_curr_dir/2;
 
 %% Problem parameters
-sampling_time = 0.1;                        % Sampling time
+sampling_time = 0.1;                           % Sampling time
 initial_heading = pi/10;                       % Initial heading 
 init_location = zeros(2,1);                  
 turning_rate_seq = [0,0,10,10,10,0,0,-5,-5,-5];
@@ -29,6 +36,11 @@ time_horizon = length(turning_rate_seq);
 v_rv_pdf_obj = makedist('Triangular','a',avg_vel-v_delta,'b', avg_vel, ...
     'c',avg_vel + v_delta);
 v_rv = RandomVector('UserDefined', @(N) v_rv_pdf_obj.random(1,N));
+% Direction vectors (Note that -pi/2 to pi/2 since we will check the
+% opposite direction as well
+theta_vec = linspace(-pi/2,pi/2,max_half_n_curr_dir + 1)';
+theta_vec = theta_vec(1:end-1);
+all_curr_dir = [cos(theta_vec),sin(theta_vec)];
 
 %% Dynamics
 % theta_seq = initial_heading + cumsum(sampling_time * [0,turning_rate_seq]);
@@ -38,15 +50,8 @@ v_rv = RandomVector('UserDefined', @(N) v_rv_pdf_obj.random(1,N));
 %                 'Disturbance', v_rv);
 sys = getDubinsCarLtv('vel-dist', turning_rate_seq', initial_heading, ...
     sampling_time, v_rv);
-
-%% Auxillary problem parameters continued
 % Concatenated matrix            
 [Z,~,G] = sys.getConcatMats(time_horizon);
-% Direction vectors (Note that -pi/2 to pi/2 since we will check the
-% opposite direction as well
-theta_vec = linspace(-pi/2,pi/2,n_curr_dir + 1)';
-theta_vec = theta_vec(1:end-1);
-all_curr_dir = [cos(theta_vec),sin(theta_vec)];
 
 %% Plot setup
 figure(1);
@@ -56,7 +61,7 @@ plot(Polyhedron('lb',-0.0001*ones(2,1),'ub',0.0001*ones(2,1)),'color','r')
 plot(Polyhedron('lb',-0.0001*ones(2,1),'ub',0.0001*ones(2,1)),'color','g')
 leg=legend('FSR set', '0.95-confidence set');
 set(leg,'AutoUpdate','off','Location','SouthWest');
-set(gca,'FontSize',25);
+set(gca,'FontSize',40);
 xlabel('x');
 ylabel('y');
 box on;
@@ -104,7 +109,7 @@ for t=1:time_horizon
         % Polytope defining matrices
         A = [];
         b = [];            
-        for curr_dir_indx = 1:n_curr_dir    
+        for curr_dir_indx = 1:max_half_n_curr_dir    
             % Get the direction to be explored
             curr_dir = all_curr_dir(curr_dir_indx, :);
 
@@ -141,7 +146,6 @@ toc(timerVal)
 
 
 %% Monte carlo simulation
-n_monte_carlo_sims = 1e5;
 concat_state_realization = generateMonteCarloSims(n_monte_carlo_sims, sys, ...
     init_location, time_horizon);
 % Add to the plot the points from the Monte-Carlo simulation
