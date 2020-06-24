@@ -133,40 +133,48 @@ timer=tic;
 elapsed_time_MC_high_acc = toc(timer);
 
 %% Visual comparison
-color_Mink = [52, 209, 191]/255;
-color_tight = [239, 239, 239]/255;
-color_under = [209, 52, 91]/255;
-color_MC_low_acc = [47, 82, 224]/255;%/255;%[0.9290 0.6940 0.1250];
-color_MC_high_acc = [0.4,0.4,0.4];%[14, 14, 14]/255;
+% https://coolors.co/f83475-b4adea-2a9d8f-4b4a67-edd434
+color_Mink = [248, 52, 117]/255; 
+color_tight = [180, 173, 234]/255;
+color_under = [42, 157, 143]/255;
+color_MC_low_acc = [75, 74, 103]/255;
+color_MC_high_acc = [237, 212, 52]/255;
+Gaussian_level_set_color = 'k';
+figure_background_color = 'w';
+legend_background_color = 'w';
 figure(1)
 clf
-plot(MinkSumSupportFunBased_overapproximation,'color', color_Mink,'alpha', 1);
+set(gcf, 'Color', figure_background_color);    
+plot(MinkSumSupportFunBased_overapproximation, 'color', color_Mink, 'alpha', 1);
 hold on
 plot(tight_polytope,'alpha',1,'color', color_tight)
 plot(underapprox_polytope,'alpha',1,'color', color_under);
-plot(Polyhedron('lb',[-1,-1],'ub',[1,1]), 'alpha',1, 'color', 'k');   % Dummy polytope for Gaussian level set
+plot(Polyhedron('lb',[-1,-1],'ub',[1,1]), 'alpha',1, 'color', Gaussian_level_set_color);   % Dummy polytope for Gaussian level set
 %plot(MinkSumBased_overapproximation, 'alpha',0.8, 'color', 'y');
 %scatter(Mink_boundary_point_of_interest(1,:),Mink_boundary_point_of_interest(2,:), 60, 'rd', 'filled');
-contour(xvec(1:10:end),yvec(1:10:end),frequency(1:10:end,1:10:end),[alpha_value alpha_value], 'LineColor', color_MC_low_acc, 'LineWidth', 4);
-contour(xvec(1:10:end),yvec(1:10:end),frequency_high_acc(1:10:end,1:10:end),[alpha_value alpha_value], 'LineColor', color_MC_high_acc, 'LineWidth', 4,'LineStyle','-.');
-plot(Polyhedron('lb',[-1,-1],'ub',[1,1]), 'alpha',1, 'color', 'y');   % Dummy polytope for markers
+contour(xvec(1:10:end),yvec(1:10:end),frequency(1:10:end,1:10:end),[alpha_value alpha_value], 'LineColor', color_MC_low_acc, 'LineWidth', 3);
+contour(xvec(1:10:end),yvec(1:10:end),frequency_high_acc(1:10:end,1:10:end),[alpha_value alpha_value], 'LineColor', color_MC_high_acc, 'LineWidth', 6,'LineStyle',':');
+plot(Polyhedron('lb',[-1,-1],'ub',[1,1]), 'alpha',1, 'color', 'c');   % Dummy polytope for projection markers
 leg = legend('$\mathrm{OccupySet}_{x}^{+\sharp}(\alpha)$',...
              '$\mathrm{OccupySet}_{x}^{\sharp}(\alpha)$',...
              '$\mathrm{OccupySet}_{x}^{\flat}(\alpha)$',...
              '$\left\{ \overline{x}\in \mathcal{X}: \psi_{x}(\overline{x}) \geq \frac{\alpha}{ \mathrm{m}( \mathcal{G}_x)}\right\}$',...
              'Sampling ($10^3$ samples)', ...
              'Sampling ($10^5$ samples)', ...
-             'Projection points'); %'Boundary points for MinkSum',...
+             'Projection points'); 
 %for point_index=1:no_of_points_on_the_circle
 %    line_points = [faraway_points_backward(:,point_index),boundary_point_of_interest(:,point_index), faraway_points_forward(:,point_index)];
 %    plot(line_points(1,:),line_points(2,:),'k-','LineWidth',1)
 %end
-set(leg,'Location','bestoutside','interpreter','latex','AutoUpdate','off')
-scatter(tight_boundary_point_of_interest(1,:),tight_boundary_point_of_interest(2,:), 150, 'ys','filled','MarkerEdgeColor','k');
+set(leg,'Location','bestoutside','interpreter','latex','AutoUpdate','off', ...
+    'color', legend_background_color)
+scatter(tight_boundary_point_of_interest(1,:), ...
+    tight_boundary_point_of_interest(2,:), 150, 'cs', 'filled', ...
+    'MarkerEdgeColor','k');
 % Draw the level set
 level_set_threshold = alpha_value/obstacle_volume;
 compAlg1Alg2_plotGaussianLevelSet(obstacle_mu, obstacle_sigma, ...
-    level_set_threshold)
+    level_set_threshold, Gaussian_level_set_color)
 grid on
 box on
 axis square
