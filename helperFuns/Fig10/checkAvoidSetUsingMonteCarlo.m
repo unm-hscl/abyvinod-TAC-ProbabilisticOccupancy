@@ -10,7 +10,6 @@
 % Functions:
 % get_ctrb_and_state_transition_matrices_unicycle
 timerVal=tic;
-no_of_MC_particles = 1e5;
 grid_x_space = 0.05;
 grid_y_space = 0.05;
 grid_min_x = 8;
@@ -60,17 +59,3 @@ end
 frequency = MC_counter/no_of_MC_particles;
 elapsed_time_MC = toc(timerVal);
 fprintf('\n');
-
-colormap([1 0 0]);
-contour(xvec,yvec,frequency,[probability_threshold probability_threshold],'linewidth',5)
-axis([grid_min_x grid_max_x grid_min_y grid_max_y])
-figure(2);
-clf
-surf(xvec,yvec,frequency);
-axis square
-axis([grid_min_x grid_max_x grid_min_y grid_max_y])
-%set(gca,'XTick',5:2:15)
-%set(gca,'YTick',5:2:15)
-box on
-grid on
-set(gca,'FontSize',20);

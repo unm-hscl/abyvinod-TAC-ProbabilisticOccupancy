@@ -24,10 +24,10 @@ function [polytopic_overapproximation, polytopic_underapproximation,...
 
     % Sample points on the sampling circle
     sampling_circle_center = obstacle_mu;
-    theta_vector = linspace(0, 2 * pi, no_of_points_on_the_bounding_ball + 1);
+    samples_on_unit_ball = spreadPointsOnUnitSphere(2, ...
+        no_of_points_on_the_bounding_ball, 0);
     points_on_the_bounding_ball = sampling_circle_center + ...
-               bounding_ball_radius * [cos(theta_vector(1:end-1));
-                                       sin(theta_vector(1:end-1))];
+               bounding_ball_radius * samples_on_unit_ball;
    
     % Iterate over all points on the sampling circle
     for point_index = 1 : no_of_points_on_the_bounding_ball

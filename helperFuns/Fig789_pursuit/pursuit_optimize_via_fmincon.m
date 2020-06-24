@@ -10,7 +10,7 @@
 % 3. Use fmincon to solve the problem from this starting point
 %    You can choose to use the gradient or not
 use_gradient = false;
-fmincon_optimoptions = optimoptions('fmincon', 'display', 'iter', ...
+fmincon_optimoptions = optimoptions('fmincon', 'display', 'off', ...
     'SpecifyObjectiveGradient', use_gradient);
 max_feas_prob_catch_location = zeros(2, count_feas);
 max_feas_prob_catch_value = zeros(1, count_feas);

@@ -2,8 +2,7 @@ clearvars;
 clc;
 close all;
 
-addpath('./helperFuns/pursuit');
-total_code_timer = tic;
+addpath('./helperFuns/Fig789_pursuit/');
 %% Global parameters
 fontSize = 30;
 plot_layout_only = 1;
@@ -97,5 +96,23 @@ figure(1);
 axis equal;
 xlim([-2,37]);
 ylim([-2,15]);
-elapsed_time_total = toc(total_code_timer);
-% rmpath('./helperFuns/pursuit/');
+% rmpath('./helperFuns/Fig789_pursuit/');
+
+%% Save figures
+figure(1);
+saveas(gcf, 'figs/PursuitLayout.png', 'png');
+savefig(gcf, 'figs/PursuitLayout.fig', 'compact');
+figure(4);
+saveas(gcf, 'figs/PursuitSolve.png', 'png');
+savefig(gcf, 'figs/PursuitSolve.fig', 'compact');
+figure(3);
+saveas(gcf, 'figs/PursuitCatchProb.png', 'png');
+savefig(gcf, 'figs/PursuitCatchProb.fig', 'compact');
+
+
+%% Results
+fprintf('Solve time for %d optimization problems (fmincon + cvx): % 1.2f (%1.1f minutes)\n', ...
+    length(elapsed_time_cvx), sum(elapsed_time_fmincon + elapsed_time_cvx), ...
+    sum(elapsed_time_fmincon + elapsed_time_cvx)/60);
+fprintf('Total computation time: % 1.2f (%1.1f minutes)\n', sum(total_time), ...
+    sum(total_time)/60);

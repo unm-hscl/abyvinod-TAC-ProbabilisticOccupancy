@@ -1,3 +1,4 @@
+addpath('helperFuns/Fig6');
 %% Use numbers {1,2,3} to obtain the different subfigures
 % Use a fixed obstacle_sigma_temp (H in the text) for figures 1--3. Else,
 % generate new if 4 is selected

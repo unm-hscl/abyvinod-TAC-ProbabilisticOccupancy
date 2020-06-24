@@ -3,11 +3,12 @@ close all;
 clc;
 addpath('helperFuns/Fig10/');
 
-figure_number = 4; %3-4
-fontSize = 30;
+figure_number = 2; %1-2
+fontSize = 35;
 sampling_time = 0.05;
 probability_threshold = 1 - 0.99;
 no_of_vectors_MinkSum = 50;
+no_of_MC_particles = 1e5;
 
 %% Input velocity --- Gaussian                      
 mu_velocity = 5;
@@ -36,12 +37,12 @@ no_of_omega_values = length(omega_values);
 % Compute the index of omega_init
 indx_of_omega_init = round((omega_init - omega_min)/omega_step) + 1;
 % Determine the pdf governing the turning rate
-if figure_number == 4
-    disp('Figure 3.b data used!');
+if figure_number == 2
+    disp('Figure 10.b data used!');
     % Skewed towards anti-clockwise turning
     omega_pdf = [0.5 0.45 0.05 0.0 0.0];
 else
-    disp('Figure 3.a data used!');
+    disp('Figure 10.a data used!');
     % Equally spread out
     omega_pdf = 1/no_of_omega_values*ones(1,no_of_omega_values);    
 end
@@ -140,13 +141,9 @@ for indx_indx_sequence = 1:no_nnz_prob_sequences
             fprintf('\b Compute! Mode: %1.3f > alpha_S: %1.3f\n', mode_of_occupancy_function, alpha_q_tau)
             % Compute the probability_occupied_set
             MinkSumSupportFunBased_overapproximation =...
-                getMinkSumSupportFunBasedOverapproximationPrOccupySet(...
-                                                obstacle_mu,...
-                                                obstacle_sigma,...
-                                                obstacle_radius,...
-                                                alpha_q_tau,...
-                                                obstacle_volume,...
-                                                no_of_vectors_MinkSum);
+                getMinkSumBasedPrOccupySetBall(obstacle_mu, obstacle_sigma,...
+                    obstacle_radius, alpha_q_tau, no_of_vectors_MinkSum);
+
             % Add the non-empty probability_occupied_set to the union
             probability_occupied_set_overapprox{indx_sequence} =...
                             MinkSumSupportFunBased_overapproximation;
@@ -165,6 +162,7 @@ grid on
 xlabel('x');
 ylabel('y');
 set(gca,'FontSize', fontSize);
+markersize = 150;
 color_scatter = ['bx';'bo';'bd';'bs';'b+';'rx';'ro';'rd';'rs';'r+';'kx';'ko';'kd';'ks';'k+';'mx';'mo';'md';'ms';'m+';'cx';'co';'cd';'cs';'c+';'yx';'yo';'yd';'ys';'y+';'gx';'go';'gd';'gs';'g+';];
 hold on
 for indx_indx_sequence = 1:no_nnz_prob_sequences
@@ -180,18 +178,43 @@ for indx_indx_sequence = 1:no_nnz_prob_sequences
     proccupyPolytope = probability_occupied_set_overapprox{indx_sequence};
     % Plot only if it is non-empty
     if ~isEmptySet(proccupyPolytope)
-        plot(proccupyPolytope,'color',color_scatter(indx_sequence,1),'alpha',0.1);
-        scatter(obstacle_init_location(1), obstacle_init_location(2),color_scatter(indx_sequence,1:2));                
+        plot(proccupyPolytope,'color', color_scatter(indx_sequence,1), 'alpha',0.1);
+        scatter(obstacle_init_location(1), obstacle_init_location(2), ...
+            markersize, color_scatter(indx_sequence,1:2));                
         for time_in_evolution=1:last_time_step_including_init
             % Get the mean and covariance of the state at time tau
             state_at_tau = SReachFwd('state-stoch', sys, obstacle_init_location, ...
                 time_in_evolution);
             mu_point = state_at_tau.mean();
-            scatter(mu_point(1),mu_point(2),color_scatter(indx_sequence,1:2));                
+            scatter(mu_point(1), mu_point(2), ...
+                markersize, color_scatter(indx_sequence,1:2));                
         end
     end
 end
 checkAvoidSetUsingMonteCarlo
+figure(1);
+colormap([1 0 0]);
+contour(xvec, yvec, frequency,[probability_threshold probability_threshold], ...
+    'linewidth',5)
+axis([grid_min_x grid_max_x grid_min_y grid_max_y])
+filename = sprintf('figs/Figure10%c', figure_number+64);
+saveas(gcf, filename, 'png');
+savefig(gcf, filename, 'compact');
+
+
 %% Report times
 fprintf('Elapsed time\n    MC | Alg. 2\n %1.3f | %1.3f\n', elapsed_time_MC, ...
     elapsed_time)
+
+%% Plot the probabilistic occupancy function
+% figure(2);
+% clf
+% surf(xvec,yvec,frequency);
+% axis square
+% axis([grid_min_x grid_max_x grid_min_y grid_max_y])
+% %set(gca,'XTick',5:2:15)
+% %set(gca,'YTick',5:2:15)
+% box on
+% grid on
+% set(gca,'FontSize',20);
+% figure(1);    

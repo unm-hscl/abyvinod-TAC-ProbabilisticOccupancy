@@ -122,7 +122,7 @@ ax.XTick=t_min:2:time_horizon;
 % ax.YTick=sort([logspace(-3, 0, 5), 0.5]);
 % ax.YScale = 'log';
 % ytickformat('%,.2f')
-ax.YLim =[0,1];
+ax.YLim =[0.01,1];
 ax.YTick=0:0.2:1;
 ax.GridAlpha=0.5;
 ax.FontSize=fontSize*1.5;

@@ -4,9 +4,7 @@ function polytopic_overapproximation = compAlg1Alg2_getMinkSumPrOccupySetBox(...
     % Implement Algorithm 2
     
     % Sample equally spaced unit vectors
-    theta_vector = linspace(0, 2 * pi, no_of_vectors + 1);
-    Amatrix = [cos(theta_vector(1:end-1));
-               sin(theta_vector(1:end-1))]';
+    Amatrix = spreadPointsOnUnitSphere(2, no_of_vectors, 0)';
 
     % Compute the ellipsoid level set (from CDC 2017 paper)
     % x^t (R^2)\Sigma^{-1}<=1 is the ellipsoid

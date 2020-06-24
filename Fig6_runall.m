@@ -1,7 +1,7 @@
 % Make sure Figure 1 is called and the docked window is maximized
 % set(0,'DefaultFigureWindowStyle','docked');figure(1);
 % Generate all the subplots seen in Figure 6
-clear;clc;addpath('helperFuns/Fig6');
+clear;clc;
 diary off;
 diary('figs/Figure6_console.txt');
 diary on;
