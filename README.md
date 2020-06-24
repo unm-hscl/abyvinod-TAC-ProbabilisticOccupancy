@@ -29,8 +29,7 @@ MATLAB scripts:
 ## Requires
 
 - SReachTools https://sreachtools.github.io
-    - MPT3 https://www.mpt3.org/
-    - CVX http://cvxr.com/cvx/
+    - All codes were tested on the commit: https://github.com/sreachtools/SReachTools/commit/41f184a3a21d7b5ff93025de78823ba3e36d4c86
+    - SReachTools requires MPT3 https://www.mpt3.org/ and CVX http://cvxr.com/cvx/
 - CharFunTools https://github.com/witkovsky/CharFunTool
-    - All codes were tested on the bleeding edge:
-      https://github.com/witkovsky/CharFunTool/commit/959c9ac6612dd521bbe87385913bc871d84a199f
+    - All codes were tested on the commit: https://github.com/witkovsky/CharFunTool/commit/959c9ac6612dd521bbe87385913bc871d84a199f
