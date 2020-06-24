@@ -1,4 +1,4 @@
-# TAC_FSRPD
+# Code for Probabilistic Occupancy via Forward Stochastic Reachability for Markov Jump Affine Systems
 
 | Title      | Probabilistic Occupancy via Forward Stochastic Reachability for Markov Jump Affine Systems |
 |------------|--------------------------------------------------------------------------------------------|
@@ -28,9 +28,9 @@ MATLAB scripts:
 
 ## Requires
 
-- SReachTools [https://sreachtools.github.io]
-    - MPT3 [https://www.mpt3.org/]
-    - CVX [http://cvxr.com/cvx/]
-- CharFunTools [https://github.com/witkovsky/CharFunTool]
+- SReachTools https://sreachtools.github.io
+    - MPT3 https://www.mpt3.org/
+    - CVX http://cvxr.com/cvx/
+- CharFunTools https://github.com/witkovsky/CharFunTool
     - All codes were tested on the bleeding edge:
-      [https://github.com/witkovsky/CharFunTool/commit/959c9ac6612dd521bbe87385913bc871d84a199f]
+      https://github.com/witkovsky/CharFunTool/commit/959c9ac6612dd521bbe87385913bc871d84a199f
