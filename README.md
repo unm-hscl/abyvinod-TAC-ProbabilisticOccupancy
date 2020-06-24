@@ -1,4 +1,4 @@
-# Code for Probabilistic Occupancy via Forward Stochastic Reachability for Markov Jump Affine Systems
+# abyvinod-TAC-ProbabilisticOccupancy
 
 | Title      | Probabilistic Occupancy via Forward Stochastic Reachability for Markov Jump Affine Systems |
 |------------|--------------------------------------------------------------------------------------------|
