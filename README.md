@@ -4,6 +4,7 @@
 |------------|--------------------------------------------------------------------------------------------|
 | Authors    | Abraham P. Vinod & Meeko M. K. Oishi                                                       |
 | Journal    | IEEE Transactions on Automatic Control                                                     |
+| Code Ocean capsule | https://doi.org/10.24433/CO.8221952.v1                                             |
 
 To generate the figures associated with the computations, run the following
 MATLAB scripts:
@@ -28,8 +29,8 @@ MATLAB scripts:
 
 ## Requires
 
-- SReachTools https://sreachtools.github.io
-    - All codes were tested on the commit: https://github.com/sreachtools/SReachTools/commit/41f184a3a21d7b5ff93025de78823ba3e36d4c86
+- SReachTools https://sreachtools.github.io (version 1.3.1)
     - SReachTools requires MPT3 https://www.mpt3.org/ and CVX http://cvxr.com/cvx/
 - CharFunTools https://github.com/witkovsky/CharFunTool
-    - All codes were tested on the commit: https://github.com/witkovsky/CharFunTool/commit/959c9ac6612dd521bbe87385913bc871d84a199f
+    - Tested on the commit: https://github.com/witkovsky/CharFunTool/commit/959c9ac6612dd521bbe87385913bc871d84a199f
+    - Tested on the version 1.5.1
